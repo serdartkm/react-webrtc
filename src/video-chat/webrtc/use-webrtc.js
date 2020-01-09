@@ -3,7 +3,7 @@
 import React,{ useState,useEffect, useCallback } from 'react';
 import useWebRTCEvents from './use-webrtc-events';
 
-export default function useWebRTC ({ iceServers, signalingmessage,sendSignalingMessage, mediaConstraints }){
+export default function useWebRTC ({ iceServers, signalingMessage,sendSignalingMessage, mediaConstraints }){
 
 	const [pc,setPc] =useState(null);
 	const { signalingState,connectionState,iceConnectionState,iceGatheringState, remoteMediaStream } =useWebRTCEvents({ pc,sendSignalingMessage });
@@ -40,12 +40,12 @@ export default function useWebRTC ({ iceServers, signalingmessage,sendSignalingM
 	
 	useEffect(() => {
 		function messageRecived(){
-			switch (signalingmessage.type){
+			switch (signalingMessage.type){
 				case 'answer':
-					setRemoteSdp(signalingmessage.sdp.sdp, 'answer');
+					setRemoteSdp(signalingMessage.sdp.sdp, 'answer');
 					break;
 				case 'ice':
-					setRemoteIce(signalingmessage.sdp);
+					setRemoteIce(signalingMessage.sdp);
 					break;
 				case 'end':
 					pc.close();
@@ -63,17 +63,17 @@ export default function useWebRTC ({ iceServers, signalingmessage,sendSignalingM
                          default:
 			}
 		}
-		if (signalingmessage && pc){
+		if (signalingMessage && pc){
 			messageRecived();
 		}
-	},[signalingmessage, pc]);
+	},[signalingMessage, pc]);
 
 	useEffect(() => {
-		if (signalingmessage && signalingmessage.type ==='offer'){
+		if (signalingMessage && signalingMessage.type ==='offer'){
 			setPc(new RTCPeerConnection(iceServers));
-			setRemoteOffer(signalingmessage.sdp.sdp);
+			setRemoteOffer(signalingMessage.sdp.sdp);
 		}
-	},[iceServers, signalingmessage]);
+	},[iceServers, signalingMessage]);
 
 	useEffect(() => {
 		if (remoteOffer && pc){
@@ -105,7 +105,7 @@ export default function useWebRTC ({ iceServers, signalingmessage,sendSignalingM
 			pc.addIceCandidate(sdp);
 		}
 		else {
-			setRemoteIceCandidates((prev) => [...prev,signalingmessage.sdp]);
+			setRemoteIceCandidates((prev) => [...prev,signalingMessage.sdp]);
 		}
 	}
 	function createAnswer (){
