@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 // eslint-disable-next-line no-unused-vars
-import React,{ useState,useEffect } from 'react';
+import React,{ useState,useEffect, useCallback } from 'react';
 import useWebRTCEvents from './use-webrtc-events';
 
 export default function useWebRTC ({ iceServers, signalingmessage,sendSignalingMessage, mediaConstraints }){
@@ -17,25 +18,25 @@ export default function useWebRTC ({ iceServers, signalingmessage,sendSignalingM
 			resetState();
 			debugger;
 		}
-	},[resetState, signalingState]);
+	},[signalingState]);
 
 	useEffect(() => {
 		if (iceConnectionState==='disconnected'){
 			resetState();
 		}
-	},[iceConnectionState, resetState]);
+	},[iceConnectionState]);
 	useEffect(() => {
 		if (connectionState==='failed'){
 			resetState();
 
 		}
-	},[connectionState, resetState]);
+	},[connectionState]);
 
 	useEffect(() => {
 		if (isCaller && pc){
 			createSDP('offer');
 		}
-	},[createSDP, isCaller, pc]);
+	},[isCaller, pc]);
 	
 	useEffect(() => {
 		function messageRecived(){
@@ -65,7 +66,7 @@ export default function useWebRTC ({ iceServers, signalingmessage,sendSignalingM
 		if (signalingmessage && pc){
 			messageRecived();
 		}
-	},[signalingmessage, pc, setRemoteIce, setRemoteSdp]);
+	},[signalingmessage, pc]);
 
 	useEffect(() => {
 		if (signalingmessage && signalingmessage.type ==='offer'){
@@ -78,9 +79,9 @@ export default function useWebRTC ({ iceServers, signalingmessage,sendSignalingM
 		if (remoteOffer && pc){
 			setRemoteSdp(remoteOffer,'offer');
 		}
-	},[remoteOffer, pc, setRemoteSdp]);
+	},[remoteOffer, pc]);
 	
-	function setRemoteSdp(sdp, type){
+	const setRemoteSdp = useCallback((sdp, type)=>{
 		if ((type==='answer' && pc.localDescription) || type==='offer'){
 			pc.setRemoteDescription(sdp)
 				.then(() => {
@@ -98,13 +99,13 @@ export default function useWebRTC ({ iceServers, signalingmessage,sendSignalingM
 					setError(err);
 				});
 		}
-	}
+	}) 
 	function setRemoteIce(sdp){
 		if (pc.remoteDescription){
 			pc.addIceCandidate(sdp);
 		}
 		else {
-			setRemoteIceCandidates((prev) => [...prev,message.sdp]);
+			setRemoteIceCandidates((prev) => [...prev,signalingmessage.sdp]);
 		}
 	}
 	function createAnswer (){
@@ -116,7 +117,7 @@ export default function useWebRTC ({ iceServers, signalingmessage,sendSignalingM
 		setPc(new RTCPeerConnection(iceServers));
 		setCaller(true);
 	}
-	function createSDP(type){
+	const createSDP =useCallback((type)=>{
 		navigator.mediaDevices.getUserMedia(mediaConstraints)
 			.then((stream) => {
 				stream
@@ -130,22 +131,22 @@ export default function useWebRTC ({ iceServers, signalingmessage,sendSignalingM
 			
 			})
 			.then(() => {
-				sendMessage({ sdp: pc.localDescription,type });
+				sendSignalingMessage({ sdp: pc.localDescription,type });
 			})
 			.catch((err) => {
 			// eslint-disable-next-line no-debugger
 				debugger;
 			});
-	}
+	})
 	function closeConnection (type){
 		switch (type){
 			case 'decline':
-				sendMessage({ type: 'decline' });
+				sendSignalingMessage({ type: 'decline' });
 				pc.close();
 				resetState();
 				break;
 			case  'end':
-				sendMessage({ type: 'end' });
+				sendSignalingMessage({ type: 'end' });
 				pc.close();
 			
 				break;
@@ -154,13 +155,14 @@ export default function useWebRTC ({ iceServers, signalingmessage,sendSignalingM
 				resetState();
 				break;
 			case 'cancel':
-				sendMessage({ type: 'cancel' });
+				sendSignalingMessage({ type: 'cancel' });
 				pc.close();
 			
 				  break;
+				  default:
 		}
 	}
-	function resetState (){
+	const resetState =useCallback(()=>{
 		if (pc){
 			pc.onicecandidate =null;
 			pc.onconnectionstatechange = null;
@@ -176,7 +178,7 @@ export default function useWebRTC ({ iceServers, signalingmessage,sendSignalingM
 		
 			setPc(null);
 		}
-	}
+	})
 	function handleSendMessage (type){
 		switch (type){
 			case 'offer':
