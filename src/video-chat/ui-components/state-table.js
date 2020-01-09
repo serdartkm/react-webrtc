@@ -6,10 +6,10 @@ export default function StateTable ({ rtcPeerConStates }){
 		<table className="zebra">
 			<thead>
 				<tr>
-					<th>ConnectionState</th>
-					<th>SignalingState</th>
-					<th>iceGatheringState</th>
-					<th>iceConnectionState</th>
+					<th>Connection State</th>
+					<th>Signaling State</th>
+					<th>iceGathering State</th>
+					<th>iceConnection State</th>
 					<th>Timestamp</th>
 				</tr>
 			</thead>
