@@ -1,6 +1,7 @@
+// eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from 'react';
 
-export default function useWebRTCState ({ pc, sendMessage }){
+export default function useWebRTCState ({ pc,sendSignalingMessage, }){
    
 	const [signalingState,setSignalingState] =useState(null);
 	const [connectionState,setConnectionState]=useState(null);
@@ -12,7 +13,7 @@ export default function useWebRTCState ({ pc, sendMessage }){
 		if (pc){
 			pc.onicecandidate = function(e) {
 				if (e.candidate){
-					sendMessage({ sdp: e.candidate,type: 'ice' });
+					sendSignalingMessage({ sdp: e.candidate,type: 'ice' });
 				}
 			  };
 			  pc.onconnectionstatechange = () => {

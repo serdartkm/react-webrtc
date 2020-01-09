@@ -1,10 +1,11 @@
+// eslint-disable-next-line no-unused-vars
 import React,{ useState,useEffect } from 'react';
 import useWebRTCEvents from './use-webrtc-events';
 
-export default function useWebRTC ({ iceServers, message,sendMessage, mediaConstraints }){
+export default function useWebRTC ({ iceServers, signalingmessage,sendSignalingMessage, mediaConstraints }){
 
 	const [pc,setPc] =useState(null);
-	const { signalingState,connectionState,iceConnectionState,iceGatheringState, remoteMediaStream } =useWebRTCEvents({ pc,sendMessage });
+	const { signalingState,connectionState,iceConnectionState,iceGatheringState, remoteMediaStream } =useWebRTCEvents({ pc,sendSignalingMessage });
 	const [error,setError] =useState(null);
 	const [localMediaStream,setLocalMediaStream] =useState(null);
 	const [remoteIceCandidates,setRemoteIceCandidates]=useState([]);
@@ -38,12 +39,12 @@ export default function useWebRTC ({ iceServers, message,sendMessage, mediaConst
 	
 	useEffect(() => {
 		function messageRecived(){
-			switch (message.type){
+			switch (signalingmessage.type){
 				case 'answer':
-					setRemoteSdp(message.sdp.sdp, 'answer');
+					setRemoteSdp(signalingmessage.sdp.sdp, 'answer');
 					break;
 				case 'ice':
-					setRemoteIce(message.sdp);
+					setRemoteIce(signalingmessage.sdp);
 					break;
 				case 'end':
 					pc.close();
@@ -61,17 +62,17 @@ export default function useWebRTC ({ iceServers, message,sendMessage, mediaConst
                          default:
 			}
 		}
-		if (message && pc){
+		if (signalingmessage && pc){
 			messageRecived();
 		}
-	},[message, pc, setRemoteIce, setRemoteSdp]);
+	},[signalingmessage, pc, setRemoteIce, setRemoteSdp]);
 
 	useEffect(() => {
-		if (message && message.type ==='offer'){
+		if (signalingmessage && signalingmessage.type ==='offer'){
 			setPc(new RTCPeerConnection(iceServers));
-			setRemoteOffer(message.sdp.sdp);
+			setRemoteOffer(signalingmessage.sdp.sdp);
 		}
-	},[iceServers, message]);
+	},[iceServers, signalingmessage]);
 
 	useEffect(() => {
 		if (remoteOffer && pc){
