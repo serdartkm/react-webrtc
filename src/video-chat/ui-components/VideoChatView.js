@@ -11,7 +11,7 @@ const style = {
   }
 };
 export default function VideoChatView({ remoteMediaStream,localMediaStream, uiState, target, name,mediaSize , handleSendMessage }) {
-  const {callEnded,calling,recievingCall, connected, connecting,callBtnVisible,answerBtnVisible,cancellBtnVisible,declineBtnVisible,ignoreBtnVisible, endBtnVisible } =uiState;
+  const {calling,recievingCall, connected, connecting,callBtnVisible,answerBtnVisible,cancellBtnVisible,declineBtnVisible,ignoreBtnVisible, endBtnVisible } =uiState;
 
   const { remoteStreamSize, localStreamSize } = mediaSize;
 
