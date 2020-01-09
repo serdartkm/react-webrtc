@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'preact/hooks';
+// eslint-disable-next-line no-unused-vars
+import React,{ useState, useEffect } from 'react';
 
 export default function PusherSignaling({ currentUser, roomId, target,name,closed }) {
 	const [message, setMessage] = useState(null);
@@ -19,7 +20,6 @@ export default function PusherSignaling({ currentUser, roomId, target,name,close
 							}
 							else {
 								setMessage(msg.msg);
-							
 								if (msg.msg.type ==='end' || msg.msg.type==='cancel'){
 									setMessages([]);
 									setPartialMessage(null);
@@ -27,7 +27,6 @@ export default function PusherSignaling({ currentUser, roomId, target,name,close
 								
 								debugger;
 								}
-							
 							}
 						}
 					}
@@ -35,14 +34,13 @@ export default function PusherSignaling({ currentUser, roomId, target,name,close
 				messageLimit: 0
 			});
 		}
-	}, [currentUser]);
+	}, [currentUser, name, roomId]);
 
 	useEffect(() => {
 		if (partialMessage){
 		
 			if (messages.length===0){
 				setMessages([partialMessage]);
-			
 			}
 			else if (messages.length>0) {
 				const msg =messages.find( element => element.id===partialMessage.id);
@@ -64,12 +62,11 @@ export default function PusherSignaling({ currentUser, roomId, target,name,close
 					setMessages(prev => [...prev.filter(e => e.id ===partialMessage.id)]) ;
 				}
 				//	console.log('fullContent', fullContent);
-				
 			}
 		}
-	},[partialMessage]);
+	},[messages, partialMessage]);
 
-	function sendMessage(msg) {
+	function sendSignalingMessage(msg) {
 
 		if (msg !== null && msg !== undefined && (msg.type ==='offer' || msg.type==='answer')) {
 		
@@ -120,6 +117,5 @@ export default function PusherSignaling({ currentUser, roomId, target,name,close
 		
 	}
 
-	return { message, sendMessage,error };
-	
+	return { message, sendSignalingMessage,error };
 }

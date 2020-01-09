@@ -13,7 +13,7 @@ export default function ConnectionDemo (){
         return <ConnectingToPusher />
     }
     else if(currentUser){
-        return <div className="connected">Connected to pusher as {currentUser.id}</div>
+        return <div className="connected"><h1>Connected to pusher as {currentUser.id}</h1></div>
     }
 
 return <div >Something went wrong !</div>
