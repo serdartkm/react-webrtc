@@ -64,7 +64,8 @@ export default function PusherSignaling({ currentUser, roomId, target,name,close
 				//	console.log('fullContent', fullContent);
 			}
 		}
-	},[messages, partialMessage]);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	},[partialMessage]);
 
 	function sendSignalingMessage(msg) {
 
