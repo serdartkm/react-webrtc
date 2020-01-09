@@ -1,17 +1,20 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 // eslint-disable-next-line no-unused-vars
 import React,{ useState,useEffect, useCallback } from 'react';
-import useWebRTCEvents from './use-webrtc-events';
 
 export default function useWebRTC ({ iceServers, signalingMessage,sendSignalingMessage, mediaConstraints }){
 
 	const [pc,setPc] =useState(null);
-	const { signalingState,connectionState,iceConnectionState,iceGatheringState, remoteMediaStream } =useWebRTCEvents({ pc,sendSignalingMessage });
 	const [error,setError] =useState(null);
 	const [localMediaStream,setLocalMediaStream] =useState(null);
 	const [remoteIceCandidates,setRemoteIceCandidates]=useState([]);
 	const [isCaller,setCaller] =useState(false);
 	const [remoteOffer, setRemoteOffer]= useState(null);
+	const [signalingState,setSignalingState] =useState(null);
+	const [connectionState,setConnectionState]=useState(null);
+	const [iceConnectionState, setIceConnectionState] = useState(null);
+	const [iceGatheringState, setIceGatheringState] = useState(null);
+	const [remoteMediaStream, setRemoteMediaStream] = useState(null);
 
 	useEffect(() => {
 		if (signalingState==='closed'){
@@ -70,7 +73,7 @@ export default function useWebRTC ({ iceServers, signalingMessage,sendSignalingM
 
 	useEffect(() => {
 		if (signalingMessage && signalingMessage.type ==='offer'){
-			setPc(new RTCPeerConnection(iceServers));
+			createRTCPeerConnection();
 			setRemoteOffer(signalingMessage.sdp.sdp);
 		}
 	},[iceServers, signalingMessage]);
@@ -114,8 +117,34 @@ export default function useWebRTC ({ iceServers, signalingMessage,sendSignalingM
 	}
 	function createOffer (){
 		
-		setPc(new RTCPeerConnection(iceServers));
+		createRTCPeerConnection();
 		setCaller(true);
+	}
+
+	function createRTCPeerConnection (){
+		const peerCon =new RTCPeerConnection(iceServers);
+		peerCon.onicecandidate = function(e) {
+			if (e.candidate){
+				sendSignalingMessage({ sdp: e.candidate,type: 'ice' });
+			}
+		  };
+		  peerCon.onconnectionstatechange = () => {
+			setConnectionState(peerCon.connectionState);
+		};
+		peerCon.onsignalingstatechange = () => {
+			setSignalingState(peerCon.signalingState);
+		};
+		peerCon.oniceconnectionstatechange = () => {
+			setIceConnectionState(peerCon.iceConnectionState);
+		};
+		peerCon.onicegatheringstatechange = () => {
+			setIceGatheringState(peerCon.iceGatheringState);
+		};
+		peerCon.ontrack = e => {
+			setRemoteMediaStream(e.streams[0]);
+		};
+
+		setPc(peerCon);
 	}
 	const createSDP =useCallback((type)=>{
 		navigator.mediaDevices.getUserMedia(mediaConstraints)
