@@ -2,7 +2,7 @@
 import React,{ useState, useEffect } from 'react';
 
 export default function PusherSignaling({ currentUser, roomId, target,name,closed }) {
-	const [message, setMessage] = useState(null);
+	const [signalingMessage, setSignalingMessage] = useState(null);
 	const [error,setError]=useState(null);
 	const [partialMessage,setPartialMessage]= useState(null);
 	const [messages,setMessages]= useState([]);
@@ -19,7 +19,7 @@ export default function PusherSignaling({ currentUser, roomId, target,name,close
 								setPartialMessage(msg);
 							}
 							else {
-								setMessage(msg.msg);
+								setSignalingMessage(msg.msg);
 								if (msg.msg.type ==='end' || msg.msg.type==='cancel'){
 									setMessages([]);
 									setPartialMessage(null);
@@ -53,12 +53,12 @@ export default function PusherSignaling({ currentUser, roomId, target,name,close
 				else
 				if (msg && msg.order==='first'){
 					fullContent =  msg.content+partialMessage.content;
-					setMessage({ sdp: JSON.parse(fullContent), type: msg.type });
+					setSignalingMessage({ sdp: JSON.parse(fullContent), type: msg.type });
 					setMessages(prev => [...prev.filter(e => e.id ===partialMessage.id)]) ;
 				}
 				else if (msg && msg.order==='second') {
 					fullContent =  partialMessage.content+msg.content;
-					setMessage({ sdp: JSON.parse(fullContent), type: msg.type });
+					setSignalingMessage({ sdp: JSON.parse(fullContent), type: msg.type });
 					setMessages(prev => [...prev.filter(e => e.id ===partialMessage.id)]) ;
 				}
 				//	console.log('fullContent', fullContent);
@@ -117,5 +117,5 @@ export default function PusherSignaling({ currentUser, roomId, target,name,close
 		
 	}
 
-	return { message, sendSignalingMessage,error };
+	return { signalingMessage, sendSignalingMessage,error };
 }
