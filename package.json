@@ -1,5 +1,5 @@
 {
-  "name": "react-webrtc",
+  "name": "react-webrtc-video-chat",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -40,5 +40,7 @@
     "@storybook/addon-links": "^5.2.8",
     "@storybook/addons": "^5.2.8",
     "@storybook/react": "^5.2.8"
-  }
+  },
+  "keywords": [],
+  "description": "real time peer to peer communication with webrtc and pusher as signaling service"
 }
