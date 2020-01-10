@@ -39,6 +39,7 @@ export default function useWebRTCDataChannel({
 
 	useEffect(() => {
 		if (pc && remoteOffer) {
+			debugger;
 			pc.ondatachannel = (event) => {
 				let channel = event.channel;
 			    channel.onopen = () => {
@@ -56,27 +57,33 @@ export default function useWebRTCDataChannel({
 				};
 				setDatachannel(channel);
 			  };
+			  debugger;
 		}
 	}, [pc, remoteOffer]);
 
 	useEffect(() => {
 		if (datachannel && remoteOffer){
+			debugger;
 			pc.setRemoteDescription(remoteOffer)
 				.then(() => {
 					if (remoteIceCandidates.length > 0) {
 						for (let ice in remoteIceCandidates) {
 							if (ice) {
 								pc.addIceCandidate(remoteIceCandidates[ice]);
+								debugger;
 							}
 						}
 					}
 				})
-				.catch(err => setError(err));
+				.catch(err => {
+					debugger;
+					setError(err)});
 		}
 	},[datachannel,remoteOffer]);
 
 	useEffect(() => {
 		if (pc && initiator) {
+			debugger;
 			let channel = pc.createDataChannel('chat');
 			channel.onopen = () => {
 				setConnected(true);
@@ -91,6 +98,7 @@ export default function useWebRTCDataChannel({
 				setError(err);
 			};
 			setDatachannel(channel) ;
+			debugger;
 		}
 	}, [initiator, pc]);
 	useEffect(() => {
@@ -98,16 +106,20 @@ export default function useWebRTCDataChannel({
 			pc.createOffer()
 				.then(offer => pc.setLocalDescription(offer))
 				.then(() => sendSignalingMessage({ type: 'offer', sdp: pc.localDescription }))
-				.catch(err => setError(err));
+				.catch(err => {
+					debugger;
+					setError(err)});
 		}
 	},[datachannel,initiator]);
 
 	function remoteOfferRecieved(offer) {
+		debugger;
 		createRTCPeerConnection();
 		setRemoteOffer(offer);
 	}
 
 	function remoteAnswerRecieved(answer) {
+		debugger;
 		if (pc.setLocalDescription) {
 			pc.setRemoteDescription(answer)
 				.then(() => {
@@ -120,7 +132,9 @@ export default function useWebRTCDataChannel({
 					}
 				})
 				.then(() => initiateAnswer())
-				.catch(err => setError(err));
+				.catch(err => {
+					debugger;
+					setError(err)});
 		}
 	}
 
@@ -134,6 +148,7 @@ export default function useWebRTCDataChannel({
 	}
 	
 	function initiateOffer() {
+		debugger;
 		createRTCPeerConnection();
 		setInitiator(true);
 	}

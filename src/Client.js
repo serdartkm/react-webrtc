@@ -5,7 +5,7 @@ import iceServers from './text-chat/webrtc/ice-servers'
 import usePusherSignaling from './signaling/pusher/usePusherSignaling'
 import ErrorMessage from './ErrorMessage';
 import './css/style.css'
-export default function Client ({currentUser,roomId,target,name}){
+export default function Client ({currentUser,roomId='0d3729a6-d4c2-4af0-8e7a-1efc9ea0f428',target,name}){
     const {signalingMessage, sendSignalingMessage,error: signalingError }= usePusherSignaling({currentUser,roomId,target,name})
     const {	initiateOffer,error : webRTCError,message,connected,sendMessage,state} = useWebRTC({signalingMessage,sendSignalingMessage,iceServers})
 
