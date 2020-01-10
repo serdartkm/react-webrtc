@@ -1,15 +1,16 @@
 import React,{useState,useEffect} from 'react';
 import './style.css';
-export default function TextChatView ({ messageRecieved,sendMessage, state, initiateOffer }){
+export default function TextChatView ({ remoteMessage,sendMessage, state, initiateOffer, connected }){
 	const { connectionState }=state;
 	const [message,setMessage] =useState('');
 	const [messages,setMessages]= useState([]);
 	const [ready,setReady]=useState(false);
 	useEffect(() => {
-		if (messageRecieved){
-			setMessages(prev => [...prev,messageRecieved]);
+		if (remoteMessage){
+			debugger
+			setMessages(prev => [...prev,remoteMessage]);
 		}
-	},[messageRecieved]);
+	},[remoteMessage]);
 
 	useEffect(() => {
 		if (message){
@@ -22,14 +23,22 @@ export default function TextChatView ({ messageRecieved,sendMessage, state, init
 		}
 	},[message,state]);
 	function handleChange (e) {
-		initiateOffer();
+
+			initiateOffer();
+		
+		
 		setMessage(e.target.value);
 	}
+
+  function handleSendMessage(){
+	  sendMessage(message)
+	  setMessage('');
+  }
 	return (<div className="root">
-		<div className="message-container">{messages && messages.map((m) => <div className="message">{m.sender}: {m.message}</div>)}</div>
+		<div className="message-container">{messages && messages.map((m, i) => <div key={i} className="message">{m.sender}: {m.message}</div>)}</div>
 		<div className="controls">
 			<input onChange={handleChange} value={message} type="text" placeholder="Enter message" />
-			<button disabled={!ready} onClick={sendMessage}>Send</button>
+			<button disabled={!ready} onClick={handleSendMessage}>Send</button>
 		</div>
 	</div>);
     

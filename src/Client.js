@@ -9,7 +9,7 @@ import ErrorMessage from './ErrorMessage';
 import './css/style.css'
 export default function Client ({currentUser,roomId='0d3729a6-d4c2-4af0-8e7a-1efc9ea0f428',target,name}){
     const {signalingMessage, sendSignalingMessage,error: signalingError }= usePusherSignaling({currentUser,roomId,target,name})
-    const {	initiateOffer,error : webRTCError,message,connected,sendMessage,state} = useWebRTC({signalingMessage,sendSignalingMessage,iceServers})
+    const {	initiateOffer,error : webRTCError,message,connected,sendMessage,state} = useWebRTC({name,signalingMessage,sendSignalingMessage,iceServers})
 
 		if(signalingError){
 			return <ErrorMessage error ={signalingError} />
@@ -20,10 +20,10 @@ export default function Client ({currentUser,roomId='0d3729a6-d4c2-4af0-8e7a-1ef
 
 return (<div className ="client">
      <div className="client-top">
-     <TextChatView  sendMessage={sendMessage} state ={state} message={message} connected={connected} initiateOffer={initiateOffer}/>
+     <TextChatView  sendMessage={sendMessage} state ={state} remoteMessage={message} connected={connected} initiateOffer={initiateOffer}/>
      </div>
      <div className="client-bottom">
-        <WebRTCState state ={state} />
+        <WebRTCState signalingState ={state.signalingState} connectionState={state.connectionState} iceConnectionState={state.iceConnectionState}iceGatheringState={state.iceGatheringState}  />
       </div>
 </div>)
 }

@@ -4,7 +4,8 @@ import React, { useEffect, useState } from 'react';
 export default function useWebRTCDataChannel({
 	sendSignalingMessage,
 	signalingMessage,
-	iceServers
+	iceServers,
+	name
 }) {
 	const [pc, setPc] = useState(null);
 	const [error, setError] = useState(null);
@@ -23,12 +24,14 @@ export default function useWebRTCDataChannel({
 		if (signalingMessage) {
 			switch (signalingMessage.type) {
 				case 'offer':
+				
 					remoteOfferRecieved(signalingMessage.sdp);
 					break;
 				case 'answer':
 					remoteAnswerRecieved(signalingMessage.sdp);
 					break;
 				case 'ice':
+				
 					remoteIceRecieved(signalingMessage.sdp);
 					break;
 				default:
@@ -39,14 +42,15 @@ export default function useWebRTCDataChannel({
 
 	useEffect(() => {
 		if (pc && remoteOffer) {
-			debugger;
+		
 			pc.ondatachannel = (event) => {
 				let channel = event.channel;
 			    channel.onopen = () => {
 					setConnected(true);
 				};
 				channel.onmessage = (event) => {
-					setMessage(event.data);
+					debugger
+					setMessage(JSON.parse(event.data));
 				};
 				channel.onclose =() => {
 					setConnected(false);
@@ -57,39 +61,39 @@ export default function useWebRTCDataChannel({
 				};
 				setDatachannel(channel);
 			  };
-			  debugger;
+			  pc.setRemoteDescription(remoteOffer.sdp)
+			  .then(() => {
+				  if (remoteIceCandidates.length > 0) {
+					  for (let ice in remoteIceCandidates) {
+						  if (ice) {
+							  pc.addIceCandidate(remoteIceCandidates[ice]);
+						
+						  }
+					  }
+				  }
+			  })
+			  .then(()=> {
+			
+				initiateAnswer()})
+			  .catch(err => {
+				  debugger;
+				  setError(err)});
+		
 		}
 	}, [pc, remoteOffer]);
 
-	useEffect(() => {
-		if (datachannel && remoteOffer){
-			debugger;
-			pc.setRemoteDescription(remoteOffer)
-				.then(() => {
-					if (remoteIceCandidates.length > 0) {
-						for (let ice in remoteIceCandidates) {
-							if (ice) {
-								pc.addIceCandidate(remoteIceCandidates[ice]);
-								debugger;
-							}
-						}
-					}
-				})
-				.catch(err => {
-					debugger;
-					setError(err)});
-		}
-	},[datachannel,remoteOffer]);
+
 
 	useEffect(() => {
 		if (pc && initiator) {
-			debugger;
+		
 			let channel = pc.createDataChannel('chat');
 			channel.onopen = () => {
 				setConnected(true);
 			};
 			channel.onmessage = (event) => {
-				setMessage(event.data);
+				debugger
+				setMessage(JSON.parse(event.data));
 			};
 			channel.onclose =() => {
 				setConnected(false);
@@ -98,30 +102,33 @@ export default function useWebRTCDataChannel({
 				setError(err);
 			};
 			setDatachannel(channel) ;
-			debugger;
+		
 		}
 	}, [initiator, pc]);
 	useEffect(() => {
-		if (datachannel && initiator){
+		if (pc && datachannel && initiator ){
+		
 			pc.createOffer()
 				.then(offer => pc.setLocalDescription(offer))
-				.then(() => sendSignalingMessage({ type: 'offer', sdp: pc.localDescription }))
+				.then(() => {
+				
+					sendSignalingMessage({ type: 'offer', sdp: pc.localDescription })})
 				.catch(err => {
 					debugger;
 					setError(err)});
 		}
-	},[datachannel,initiator]);
+	},[datachannel,initiator,pc]);
 
 	function remoteOfferRecieved(offer) {
-		debugger;
+
 		createRTCPeerConnection();
 		setRemoteOffer(offer);
 	}
 
 	function remoteAnswerRecieved(answer) {
-		debugger;
+	
 		if (pc.setLocalDescription) {
-			pc.setRemoteDescription(answer)
+			pc.setRemoteDescription(answer.sdp)
 				.then(() => {
 					if (remoteIceCandidates.length > 0) {
 						for (let ice in remoteIceCandidates) {
@@ -131,7 +138,7 @@ export default function useWebRTCDataChannel({
 						}
 					}
 				})
-				.then(() => initiateAnswer())
+				
 				.catch(err => {
 					debugger;
 					setError(err)});
@@ -139,7 +146,8 @@ export default function useWebRTCDataChannel({
 	}
 
 	function remoteIceRecieved(ice) {
-		if (pc.remoteDescription) {
+	
+		if ( pc && pc.remoteDescription) {
 			pc.addIceCandidate(ice);
 		}
 		else {
@@ -148,19 +156,24 @@ export default function useWebRTCDataChannel({
 	}
 	
 	function initiateOffer() {
-		debugger;
+	if (pc ===null){
 		createRTCPeerConnection();
 		setInitiator(true);
+	}
+	
 	}
 
 	function initiateAnswer() {
 		pc.createAnswer()
 			.then(answer => pc.setLocalDescription(answer))
-			.then(() => sendSignalingMessage({ type: 'answer', sdp: pc.localDescription }))
+			.then(() => {
+			 
+				sendSignalingMessage({ type: 'answer', sdp: pc.localDescription })})
 			.catch(err => setError(err));
 	}
 
 	function createRTCPeerConnection() {
+	
 		let peerCon = new RTCPeerConnection(iceServers);
 		peerCon.onicecandidate = function(e) {
 			if (e.candidate) {
@@ -184,7 +197,9 @@ export default function useWebRTCDataChannel({
 
 	
 	function sendMessage (value){
-		datachannel.send(JSON.stringify(value));
+		const localMessage ={sender:name,message:value}
+		setMessage(localMessage);
+		datachannel.send(JSON.stringify(localMessage));
 	}
 	return {
 		initiateOffer,
