@@ -1,22 +1,20 @@
-body{
-    margin: 0;
-    padding: 0;
+
+.root{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 .message{
 margin: 5px;
 }
 .message-container {
-    height: 30vh;
-    width: 100%;
-    background-color:#e8eaf6;
-    padding: 5px;
-
+    flex: 5;
 }
 .controls{
-    padding-right: 0;
-    margin-right: 0;
+    flex: 1;
+
     display: flex;
-    margin-top: 5px;
+ 
     button{
         flex: 1;
     }

@@ -1,6 +1,12 @@
-body {
-  margin: 0;
-  padding: 0;
+.root {
+  height: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
 }
 
 .message {
@@ -8,19 +14,18 @@ body {
 }
 
 .message-container {
-  height: 30vh;
-  width: 100%;
-  background-color: #e8eaf6;
-  padding: 5px;
+  -webkit-box-flex: 5;
+      -ms-flex: 5;
+          flex: 5;
 }
 
 .controls {
-  padding-right: 0;
-  margin-right: 0;
+  -webkit-box-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  margin-top: 5px;
 }
 
 .controls button {

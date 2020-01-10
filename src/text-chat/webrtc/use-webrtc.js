@@ -11,8 +11,8 @@ export default function useWebRTCDataChannel({
 	const [remoteIceCandidates, setRemoteIceCandidates] = useState([]);
 	const [remoteOffer, setRemoteOffer] = useState(null);
 	const [initiator, setInitiator] = useState(false);
-	const [open,setOpen] =useState(false);
-	const [data,setData]= useState(false);
+	const [connected,setConnected] =useState(false);
+	const [message,setMessage]= useState(false);
 	const [datachannel,setDatachannel]=useState(null);
 	const [signalingState, setSignalingState] = useState(null);
 	const [connectionState, setConnectionState] = useState(null);
@@ -42,13 +42,13 @@ export default function useWebRTCDataChannel({
 			pc.ondatachannel = (event) => {
 				let channel = event.channel;
 			    channel.onopen = () => {
-				  setOpen(true);
+					setConnected(true);
 				};
 				channel.onmessage = (event) => {
-				  setData(event.data);
+					setMessage(event.data);
 				};
 				channel.onclose =() => {
-					setOpen(false);
+					setConnected(false);
 	
 				};
 				channel.onerror = (err) => {
@@ -79,13 +79,13 @@ export default function useWebRTCDataChannel({
 		if (pc && initiator) {
 			let channel = pc.createDataChannel('chat');
 			channel.onopen = () => {
-				setOpen(true);
+				setConnected(true);
 			};
 			channel.onmessage = (event) => {
-				setData(event.data);
+				setMessage(event.data);
 			};
 			channel.onclose =() => {
-				setOpen(false);
+				setConnected(false);
 			};
 			channel.onerror = (err) => {
 				setError(err);
@@ -168,15 +168,15 @@ export default function useWebRTCDataChannel({
 	}
 
 	
-	function sendData (value){
+	function sendMessage (value){
 		datachannel.send(JSON.stringify(value));
 	}
 	return {
 		initiateOffer,
 		error,
-		data,
-		open,
-		sendData,
+		message,
+		connected,
+		sendMessage,
 		state: {
 			signalingState,
 			iceGatheringState,
