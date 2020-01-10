@@ -1,0 +1,12 @@
+.demo{
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    height: 50vh;
+}
+.client {
+    flex: 1;
+    background-color: #c5cae9;
+    height: 80%;
+}
