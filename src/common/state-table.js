@@ -4,7 +4,7 @@ import   './css/style.css';
 
 export default function StateTable ({ rtcPeerConStates }){
 	return (
-		<table class="zebra">
+		<table className="zebra">
 			<thead>
 				<tr>
 					<th>ConnectionState</th>
@@ -15,7 +15,7 @@ export default function StateTable ({ rtcPeerConStates }){
 				</tr>
 			</thead>
 			<tbody>
-				{rtcPeerConStates && rtcPeerConStates.map((s) => (<tr>
+				{rtcPeerConStates && rtcPeerConStates.map((s, i) => (<tr key={i}>
 					<td style={{ backgroundColor: s.connectionState.changed===true ? 'orange' :'' }}>{s.connectionState.state}</td>
 					<td style={{ backgroundColor: s.signalingState.changed===true ? 'orange' :'' }}>{s.signalingState.state}</td>
 					<td style={{ backgroundColor: s.iceGatheringState.changed===true ? 'orange' :'' }}>{s.iceGatheringState.state}</td>
