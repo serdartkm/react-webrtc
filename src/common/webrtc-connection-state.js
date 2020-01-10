@@ -1,7 +1,6 @@
 import React, {useEffect,useState} from 'react'
 import StateTable from './state-table';
-export default function RTCStateView ({state  }){
-    const {signalingState,connectionState,iceConnectionState,iceGatheringState} =state
+export default function WebRTCConnectionState ({signalingState ='',connectionState='',iceConnectionState='',iceGatheringState=''  }){
 	const [rtcPeerConStates, setRtcPeerConStates]= useState([]);
 
 	useEffect(() => {
@@ -58,8 +57,8 @@ export default function RTCStateView ({state  }){
 	},[signalingState]);
 
 	return (
-		<div style={{ height: 150 }}>
-			<h3>RTCPeerConnection state</h3>
+		<div >
+			<div>RTCPeerConnection state</div>
 			<StateTable rtcPeerConStates={rtcPeerConStates} />
 		</div>
 		

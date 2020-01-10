@@ -2,7 +2,7 @@ import React,{useState,useEffect} from 'react';
 import './style.css';
 export default function TextChatView ({ messageRecieved,sendMessage, state, initiateOffer }){
 	const { connectionState }=state;
-	const [message,setMessage] =useState(null);
+	const [message,setMessage] =useState('');
 	const [messages,setMessages]= useState([]);
 	const [ready,setReady]=useState(false);
 	useEffect(() => {
@@ -28,7 +28,7 @@ export default function TextChatView ({ messageRecieved,sendMessage, state, init
 	return (<div className="root">
 		<div className="message-container">{messages && messages.map((m) => <div className="message">{m.sender}: {m.message}</div>)}</div>
 		<div className="controls">
-			<input onInput={handleChange} value={message} type="text" placeholder="Enter message" />
+			<input onChange={handleChange} value={message} type="text" placeholder="Enter message" />
 			<button disabled={!ready} onClick={sendMessage}>Send</button>
 		</div>
 	</div>);

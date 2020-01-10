@@ -21,10 +21,29 @@ body {
 }
 
 .client {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
   background-color: #9fa8da;
   margin: 5px;
   width: 300px;
-  height: 50%;
+  height: 100%;
+}
+
+.client-top {
+  -webkit-box-flex: 2;
+      -ms-flex: 2;
+          flex: 2;
+}
+
+.client-bottom {
+  -webkit-box-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
 }
 
 .error-message-container {

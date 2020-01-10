@@ -15,12 +15,23 @@ body{
 }
 
 .client {
-    
+    display: flex;
+    flex-direction: column;
     background-color: #9fa8da;
     margin: 5px;
     width: 300px;
-    height: 50%;
+    height: 100%;
 }
+
+
+.client-top{
+ 
+    flex: 2;
+    }
+    
+    .client-bottom{
+    flex: 1;
+    }
 
 .error-message-container {
     display: flex;
