@@ -2,7 +2,7 @@
 import React from 'react'
 import CallAnimation from './CallAnimation';
 import DisplayMediaStream from './DisplayMediaStream';
-import './style.css';
+import './css/style.css';
 const style = {
   btn: {
     padding: 5,

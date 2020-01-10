@@ -1,5 +1,5 @@
 import React,{ useRef, useEffect }  from 'react';
-import './style.css';
+import './css/style.css';
 export default function DisplayMediaStream ({ mediaStream, width, height,style, name }) {
 	const videoRef =useRef(null);
 
