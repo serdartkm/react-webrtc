@@ -1,28 +1,28 @@
 import React from 'react'
 import Client from './Client';
-import usePusher,{ getPusherConfig } from '.';
+import usePusher,{ getPusherConfig } from './signaling/pusher/usePusher';
 import ErrorMessage from './ErrorMessage'
-export default function Demo ({title}){
-    const { currentUser: gon , error:gonError } = usePusher(getPusherConfig({ userId: 'gon' }));
-    const { currentUser: kon, error:konError } = usePusher(getPusherConfig({ userId: 'kon' }));
+export default function Demo ({title, clientOneName,clientTwoName}){
+    const { currentUser: clientOne , error:clientOneError } = usePusher(getPusherConfig({ userId: clientOneName }));
+    const { currentUser: clientTwo, error:clientTwoError } = usePusher(getPusherConfig({ userId: 'kon' }));
     
-    if(gonError){
-        return <ErrorMessage error ={gonError}/>
+    if(clientOneError){
+        return <ErrorMessage error ={clientOneError}/>
     }
-    else if (konError){
-        return <ErrorMessage error ={konError} />
+    else if (clientTwoError){
+        return <ErrorMessage error ={clientTwoError} />
     }
 
-    else if (gon && kon){
+    else if (clientOne && clientTwo){
         return <div className="root">
         <h1 className="demo-title">{title}</h1>
                 <div className="demo">
-                <Client currentUser={gon} name="gon" target="kon" />
-                <Client currentUser={kon} name="kon" target="gon" />
+                <Client currentUser={clientOne} name={clientOneName} target={clientTwoName} />
+                <Client currentUser={clientTwo} name={clientTwoName} target={clientTwoName} />
                 </div>
             </div>
     }
-    return <ErrorMessage error ={{message:"Unexpected error"}} />
+    return <div className="loading"><h2>Loading...</h2></div>
 
   
 }
