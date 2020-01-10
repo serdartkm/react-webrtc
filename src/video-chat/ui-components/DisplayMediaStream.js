@@ -1,6 +1,6 @@
 import React,{ useRef, useEffect }  from 'react';
 import './css/style.css';
-export default function DisplayMediaStream ({ mediaStream, width, height,style, name }) {
+export default function DisplayMediaStream ({ mediaStream, width, height,style, name, title }) {
 	const videoRef =useRef(null);
 
 
@@ -15,7 +15,9 @@ export default function DisplayMediaStream ({ mediaStream, width, height,style, 
 	},[mediaStream]);
 
 	 if (mediaStream !==null){
-		return (<div style={{ height: '100%', width: '100%', display: 'flex' ,justifyContent: 'center',position: 'relative' }}><video  width={width} autoPlay  ref={videoRef} /></div>);
+		return (<div style={{ height: '100%', width: '100%', display: 'flex' ,justifyContent: 'center',position: 'relative'}}><video  width={width} autoPlay  ref={videoRef} />
+	 <div style={{position:'absolute', top:4, fontSize:16, backgroundColor:'#e8eaf6', opacity:'0.5'}}>{title}</div>
+		</div>);
 	
 	}
 	return null;

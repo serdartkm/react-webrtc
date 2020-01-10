@@ -8,8 +8,8 @@ import useWebRTC from './video-chat/webrtc/use-webrtc';
 import "./css/style.css";
 
 const mediaSize ={
-	localStreamSize: { height: 100, width: 100 },
-	remoteStreamSize: { height: 250, width: 250 }
+	localStreamSize: { height: 70, width: 70 },
+	remoteStreamSize: { height: 150, width: 180 }
 };
 
 const mediaConstraints ={ video: true,audio: false };
@@ -28,7 +28,7 @@ return (
 			/>
       </div>
       <div className="client-bottom">
-        <WebRTCState />
+        <WebRTCState signalingState={state.signalingState} connectionState={state.connectionState} iceGatheringState={state.iceGatheringState} iceConnectionState={state.iceConnectionState} />
       </div>
     </div>
   );

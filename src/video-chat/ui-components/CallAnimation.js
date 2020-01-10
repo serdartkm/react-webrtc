@@ -1,14 +1,14 @@
 import React,{ useEffect, useState }  from 'react';
-
+import './css/style.css'
 const ProgressCircle = ({ selected }) => (
 	<div style={{
-		height: 6,
-		width: 6,
-		padding: 3,
-		borderRadius: 50,
-		margin: 4,
+		height: 2,
+		width: 3,
+		padding: 2,
+		borderRadius: 25,
+		margin: 3,
 		textAlign: 'center',
-		backgroundColor: selected ? '#2e7d32' : '#9fa8da'
+		backgroundColor: selected ? '#5c6bc0' : '#e8eaf6'
 	}}
 	/>
 );
@@ -73,19 +73,17 @@ export default function ProgressLoader ({ calling, recievingCall,target }) {
 	},[selected,calling, recievingCall]);
 
 	return (
-		<div  style={{ display: 'flex',flexDirection: 'column',alignItems: 'center', alignContent: 'center' }}>
+		<div className="call-animation">
 			<div>{calling && <div>Calling to ...{target}</div>}</div>
 			<div>
 				<ProgressCircle selected={selected === 6} />
 				<ProgressCircle selected={selected === 5} />
-
 				<ProgressCircle selected={selected === 4} />
 				<ProgressCircle selected={selected === 3} />
 				<ProgressCircle selected={selected === 2} />
 				<ProgressCircle selected={selected === 1} />
 				<ProgressCircle selected={selected === 0} />
 			</div>
-		
 			<div>{recievingCall && <div>Recieving a call from ...{target}</div>}</div>
 		</div>
 		

@@ -6,7 +6,7 @@ import './css/style.css';
 const style = {
   btn: {
     padding: 5,
-    margin: 5,
+  
     width: 100
   }
 };
@@ -14,8 +14,6 @@ export default function VideoChatView({ remoteMediaStream,localMediaStream, uiSt
   const {calling,recievingCall, connected, connecting,callBtnVisible,answerBtnVisible,cancellBtnVisible,declineBtnVisible,ignoreBtnVisible, endBtnVisible } =uiState;
 
   const { remoteStreamSize, localStreamSize } = mediaSize;
-
-
   function sendOffer (){
     handleSendMessage('offer');
   }
@@ -41,10 +39,10 @@ export default function VideoChatView({ remoteMediaStream,localMediaStream, uiSt
 
       <div className="media-container">
         <div className="local-media">
-        {connected && <DisplayMediaStream name={name} style={{ backgroundColor: 'blue' }} width={localStreamSize.width} mediaStream={localMediaStream} />}
+        {connected && <DisplayMediaStream name={name} style={{ backgroundColor: 'blue' }} width={localStreamSize.width} mediaStream={localMediaStream} title="local"/>}
         </div>
         <div className="remote-media">
-          {connected && <DisplayMediaStream name={target} style={{ backgroundColor: 'blue' }} width={remoteStreamSize.width} height={remoteStreamSize.height} mediaStream={remoteMediaStream} />}
+          {connected && <DisplayMediaStream name={target} style={{ backgroundColor: 'blue' }} width={remoteStreamSize.width} height={remoteStreamSize.height} mediaStream={remoteMediaStream} title="remote" />}
         </div>
       </div>
       <div className="call-animation">

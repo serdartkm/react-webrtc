@@ -34,7 +34,7 @@ tbody tr:nth-child(odd) {
   width: 100%;
 
     // debugging props
-   background-color: darkmagenta;
+ 
   // padding: 1%;
   // height: 96%;
   // width: 96%;
@@ -48,7 +48,7 @@ tbody tr:nth-child(odd) {
  top:10px;
  left:10px;
  z-index: 5;
- border :3px solid white;
+ // border :3px solid white;
  // debugging property
  //background-color: orange;
 
@@ -105,15 +105,24 @@ tbody tr:nth-child(odd) {
 
 .button-container{
   position: absolute;
-  bottom: 5%;
+  bottom: 2px;
   display: flex;
   justify-content: center;
   width: 100%;
-
+  
   // debugging props
 
   // background-color: fuchsia;
 }
+button {
+  width:20px;
+}
 
 
+.call-animation{
+  display: flex;
+  flex-direction: column;
+  justify-items: flex-start;
 
+
+}

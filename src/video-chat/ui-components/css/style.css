@@ -24,7 +24,6 @@ tbody tr:nth-child(odd) {
   position: relative;
   height: 100%;
   width: 100%;
-  background-color: darkmagenta;
 }
 
 .local-media {
@@ -34,7 +33,6 @@ tbody tr:nth-child(odd) {
   top: 10px;
   left: 10px;
   z-index: 5;
-  border: 3px solid white;
 }
 
 .local-media .display-mediastream-container {
@@ -82,7 +80,7 @@ tbody tr:nth-child(odd) {
 
 .button-container {
   position: absolute;
-  bottom: 5%;
+  bottom: 2px;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -90,5 +88,20 @@ tbody tr:nth-child(odd) {
       -ms-flex-pack: center;
           justify-content: center;
   width: 100%;
+}
+
+button {
+  width: 20px;
+}
+
+.call-animation {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  justify-items: flex-start;
 }
 /*# sourceMappingURL=style.css.map */
