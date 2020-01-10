@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Demo from './Demo'
 import * as serviceWorker from './serviceWorker';
+import Demo from './Demo'
 
 ReactDOM.render(<Demo title="Demo Title" />, document.getElementById('root'));
 

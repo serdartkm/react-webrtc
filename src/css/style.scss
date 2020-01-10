@@ -21,3 +21,16 @@ body{
     width: 300px;
     height: 50%;
 }
+
+.error-message-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+.error-message{
+    flex: 1;
+    text-align: center;
+  
+
+}
