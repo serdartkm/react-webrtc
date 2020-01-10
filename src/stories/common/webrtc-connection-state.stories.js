@@ -9,4 +9,4 @@ const state ={
     signalingState:'',connectionState:'',iceConnectionState:'',iceGatheringState:''
 }
 
-export const webRTCConnectionState = () => <WebRTCConnectionState  state={state}/>
+export const webRTCConnectionState = () => <div style={{height:200}}><WebRTCConnectionState  state={state}/></div> 

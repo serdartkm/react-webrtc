@@ -57,8 +57,8 @@ export default function WebRTCConnectionState ({signalingState ='',connectionSta
 	},[signalingState]);
 
 	return (
-		<div >
-			<div>RTCPeerConnection state</div>
+		<div className="table-container">
+			<div >RTCPeerConnection state</div>
 			<StateTable rtcPeerConStates={rtcPeerConStates} />
 		</div>
 		

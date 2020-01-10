@@ -1,11 +1,12 @@
 table {
     border-collapse: collapse;
     width: 100%;
+    zoom: 50%;
   }
   
   th,
   td {
-    padding: 5px;
+
     text-align: left;
     border: 1px solid #ccc;
   }
@@ -16,7 +17,10 @@ table {
   
 
   
-
+.table-container{
+  height: 200px;
+  background-color:#c5cae9;
+}
 
 
 
