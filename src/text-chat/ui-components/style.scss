@@ -6,9 +6,11 @@
 }
 .message{
 margin: 5px;
+
 }
 .message-container {
     flex: 5;
+    overflow: auto;
 }
 .controls{
     flex: 1;

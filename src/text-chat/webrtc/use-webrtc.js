@@ -127,7 +127,7 @@ export default function useWebRTCDataChannel({
 
 	function remoteAnswerRecieved(answer) {
 	
-		if (pc.setLocalDescription) {
+		if (pc.setLocalDescription  && pc.remoteDescription===null) {
 			pc.setRemoteDescription(answer.sdp)
 				.then(() => {
 					if (remoteIceCandidates.length > 0) {
