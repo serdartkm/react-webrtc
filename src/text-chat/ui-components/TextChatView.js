@@ -23,10 +23,6 @@ export default function TextChatView ({ remoteMessage,sendMessage, state, initia
 		}
 	},[message,state]);
 	function handleChange (e) {
-
-			initiateOffer();
-		
-		
 		setMessage(e.target.value);
 	}
 
@@ -37,7 +33,7 @@ export default function TextChatView ({ remoteMessage,sendMessage, state, initia
 	return (<div className="root">
 		<div className="message-container">{messages && messages.map((m, i) => <div key={i} className="message">{m.sender}: {m.message}</div>)}</div>
 		<div className="controls">
-			<input onChange={handleChange} value={message} type="text" placeholder="Enter message" />
+			<input onFocus={initiateOffer} onChange={handleChange} value={message} type="text" placeholder="Enter message" />
 			<button disabled={!ready} onClick={handleSendMessage}>Send</button>
 		</div>
 	</div>);
