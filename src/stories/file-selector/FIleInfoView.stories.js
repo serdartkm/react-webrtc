@@ -1,5 +1,5 @@
 import React from 'react'
-import FileInfoView from '../../file-uploader/ui-components/file-info-view';
+import FileInfoView from '../../file-reader/ui-components/file-info-view';
 export default {
     title :'FileInfoView'
 }

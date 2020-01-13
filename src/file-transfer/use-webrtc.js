@@ -71,24 +71,29 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
     },[datachannel,pc,initiator])
 
     useEffect(()=>{
-        pc.ondatachannel = (event) => {
-            let channel = event.channel;
-            channel.onopen = () => {
-                setConnected(true);
-            };
-            channel.onmessage = (event) => {
-                debugger
-               // setMessage(JSON.parse(event.data));
-            };
-            channel.onclose =() => {
-                setConnected(false);
 
-            };
-            channel.onerror = (err) => {
-                setError(err);
-            };
-            setDatachannel(channel);
-          };
+        if(pc && remoteOffer){
+            pc.ondatachannel = (event) => {
+                let channel = event.channel;
+                channel.onopen = () => {
+                    setConnected(true);
+                };
+                channel.onmessage = (event) => {
+                    debugger
+                   // setMessage(JSON.parse(event.data));
+                };
+                channel.onclose =() => {
+                    setConnected(false);
+    
+                };
+                channel.onerror = (err) => {
+                    setError(err);
+                };
+                setDatachannel(channel);
+              };
+
+        }
+   
     },[pc, remoteOffer])
 
     useEffect(()=>{

@@ -1,0 +1,21 @@
+table {
+  border-collapse: collapse;
+  width: 100%;
+  zoom: 50%;
+}
+
+th,
+td {
+  text-align: left;
+  border: 1px solid #ccc;
+}
+
+tbody tr:nth-child(odd) {
+  background: #eee;
+}
+
+.table-container {
+  height: 200px;
+  background-color: #c5cae9;
+}
+/*# sourceMappingURL=style.css.map */

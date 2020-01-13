@@ -1,6 +1,6 @@
 import React from 'react'
-import FileSelectorView from '../../file-uploader/ui-components/file-selector-view'
-import FileInfo from '../../file-uploader/ui-components/file-info-view'
+import FileSelectorView from '../../file-reader/ui-components/file-selector-view'
+import FileInfo from '../../file-reader/ui-components/file-info-view'
 
 const style ={
     root:{

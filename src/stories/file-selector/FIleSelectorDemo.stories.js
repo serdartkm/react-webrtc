@@ -1,5 +1,5 @@
 import React from 'react'
-import FileSelectorDemo from '../../file-uploader/demo/FileSelectorDemo'
+import FileSelectorDemo from '../../file-reader/demo/FileSelectorDemo'
 
 export default{
     title: "FileSelectorDemo"

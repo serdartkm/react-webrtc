@@ -7,7 +7,7 @@ export default function useFileReader (){
     const [slices,setSlices]= useState([])
     const [fileChunk, setFileChunk] =useState(null);
     const [reader,setReader]=useState(null);
-
+    const [error,setError] =useState(null);
 
     useEffect(()=>{
         createFileReader()
@@ -22,6 +22,7 @@ export default function useFileReader (){
     useEffect(()=>{
         if(file){
             sliceFile(file);
+         debugger;
         }
     },[file])
     function handleFileChange (e){
@@ -35,8 +36,9 @@ export default function useFileReader (){
 
         }
 
-        rd.onerror =()=>{
-
+        rd.onerror =(err)=>{
+            setError(err);
+            debugger;
         }
 
         rd.onloadstart =()=>{
@@ -61,10 +63,12 @@ export default function useFileReader (){
     }
 
     function sliceFile(file){
+        debugger;
         const size =file.size;
         let start =0;
             for (start; start < size; start * BYTES_PER_CHUNK){
                 let end = Math.min(file.size, start + BYTES_PER_CHUNK)
+                debugger;
                 setSlices(prev => [...prev,{start,end}])
             }
     }
@@ -80,5 +84,5 @@ export default function useFileReader (){
     }
 
  
-    return {handleFileChange, reader, fileChunk, handleReadFileBySlice}
+    return {handleFileChange, file, fileChunk, handleReadFileBySlice,error}
 }
