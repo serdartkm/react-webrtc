@@ -1,0 +1,32 @@
+#fileElem{
+    display: none;
+}
+
+.file-selector{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+}
+
+.file-info-table{
+    flex: 1;
+}
+
+.file-info-row{
+    display: flex;
+    justify-content: stretch;
+    border-bottom:  1px solid #9fa8da;
+    padding: 5px;
+}
+
+.file-info-header {
+    display: flex;
+    background-color: #e8eaf6;
+    padding: 5px;
+    border-bottom:  1px solid #9fa8da;
+}
+
+.file-info-col{
+    flex: 1;
+}
