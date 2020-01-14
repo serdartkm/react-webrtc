@@ -29,7 +29,7 @@ export default function Client({ currentUser, name, target,roomId='0d3729a6-d4c2
         {file && <FileTransferView state={state} handleSendMessage={handleSendMessage} readProgress={readProgress} />}
       </div>
       <div className="client-bottom">
-        <WebRTCState state={state} />
+        <WebRTCState signalingState={state.signalingState} connectionState={state.connectionState} iceConnectionState={state.iceConnectionState} iceGatheringState={state.iceGatheringState} />
       </div>
     </div>
   );

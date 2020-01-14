@@ -23,13 +23,13 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
 
     useEffect(()=>{
         if(pc && initiator){
-            debugger; //4
+         
             let channel = pc.createDataChannel('chat');
 			channel.onopen = () => {
 				setConnected(true);
 			};
 			channel.onmessage = (event) => {
-				debugger
+			
 			//	setMessage(JSON.parse(event.data));
 			};
 			channel.onclose =() => {
@@ -45,14 +45,14 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
 
     useEffect(()=>{
         if(pc && datachannel && initiator){
-            debugger; //5
+          
             pc.createOffer()
             .then((localOffer)=> {
-                debugger;  //6
+              
                 pc.setLocalDescription(localOffer);
             })
             .then(()=>{
-                debugger; //7
+              
                 sendSignalingMessage({type:'file-offer', sdp:pc.localDescription})
 
             })
@@ -67,14 +67,14 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
     useEffect(()=>{
 
         if(pc && remoteOffer){
-            debugger; //11
+      
             pc.ondatachannel = (event) => {
                 let channel = event.channel;
                 channel.onopen = () => {
                     setConnected(true);
                 };
                 channel.onmessage = (event) => {
-                    debugger
+           
                    // setMessage(JSON.parse(event.data));
                 };
                 channel.onclose =() => {
@@ -86,7 +86,33 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
                 };
                 setDatachannel(channel);
               };
-
+              pc.setRemoteDescription(remoteOffer)
+              .then(()=>{
+              
+                  return pc.createAnswer()
+              })
+              .then((localAnswer)=>{
+               
+                  pc.setLocalDescription(localAnswer);
+              })
+              .then(()=>{
+                
+                  sendSignalingMessage({type:'file-answer', sdp:pc.localDescription})
+              })
+              .then(() => {
+                 
+                  if (remoteIceCandidates.length > 0) {
+                      for (let ice in remoteIceCandidates) {
+                          if (ice) {
+                              pc.addIceCandidate(remoteIceCandidates[ice]);
+                          }
+                      }
+                  }
+              })
+              .catch((err)=>{
+                  debugger;
+                  setError(err);
+              })
         }
    
     },[pc, remoteOffer])
@@ -94,35 +120,7 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
 
     
 
-    useEffect(()=>{
-        if(pc && remoteOffer && datachannel){
-            debugger ; //12
-            pc.setRemoteDescription(remoteOffer)
-            .then(()=>{
-                debugger; //13
-                return pc.createAnswer()
-            })
-            .then((localAnswer)=>{
-                debugger; //14
-                pc.setLocalDescription(localAnswer);
-            })
-            .then(() => {
-                debugger; //15
-                if (remoteIceCandidates.length > 0) {
-                    for (let ice in remoteIceCandidates) {
-                        if (ice) {
-                            pc.addIceCandidate(remoteIceCandidates[ice]);
-                        }
-                    }
-                }
-            })
-            .catch((err)=>{
-                debugger;
-                setError(err);
-            })
-        }
-    }
-,[pc,remoteOffer,datachannel])
+
     useEffect(()=>{
         if(message){
             sendMessage();
@@ -135,9 +133,10 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
                 case 'file-offer':
                     createRTCPeerConnection(iceServers)
                     setRemoteOffer(signalingMessage.sdp);
-                    debugger; //8
+                
                     break;
                 case 'file-answer':
+               
                     remoteAnswerRecieved(signalingMessage.sdp)
                     break;
                 case 'file-decline':
@@ -165,7 +164,7 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
 
 
     function createLocalOffer (){
-        debugger; //2
+      
         createRTCPeerConnection()
         setInitiator(true);
     }
@@ -175,7 +174,7 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
     }
 
     function createRTCPeerConnection(){
-        debugger; //3  //10
+     
     	let peerCon = new RTCPeerConnection(iceServers);
 		peerCon.onicecandidate = function(e) {
 			if (e.candidate) {
@@ -199,9 +198,11 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
     }
 
     function remoteAnswerRecieved (answer){
+       
         if (pc.setLocalDescription  && pc.remoteDescription===null) {
-			pc.setRemoteDescription(answer.sdp)
+			pc.setRemoteDescription(answer)
 				.then(() => {
+                
 					if (remoteIceCandidates.length > 0) {
 						for (let ice in remoteIceCandidates) {
 							if (ice) {
@@ -222,14 +223,14 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
 			pc.addIceCandidate(ice);
 		}
 		else {
-			setRemoteIceCandidates(prev => [...prev, signalingMessage.sdp]);
+			setRemoteIceCandidates(prev => [...prev, ice]);
 		}
     }
 
     function handleSendMessage (type){
         switch(type){
             case 'file-offer':
-                debugger; // 1
+             
             createLocalOffer();
             break;
             case 'file-answer':
