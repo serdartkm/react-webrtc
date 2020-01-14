@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import iceServers from './ice-servers';
 
-export default function useWebRTC ({signalingMessage,sendSignalingMessage,message, readProgress, fileData}){
+export default function useWebRTC ({signalingMessage,sendSignalingMessage,message, readProgress,startReadingFileBySlice, fileChunk}){
     const [pc, setPc] = useState(null);
     const [error, setError] = useState(null);
     const [remoteIceCandidates, setRemoteIceCandidates] = useState([]);
@@ -16,21 +16,14 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
     
 
     useEffect(()=>{
-        if(fileData){
-            switch(fileData.progress){
-                case 'start':
-                    break;
-                case 'next':
-                    break;
-                case 'end':
-                    break;
-                    default:
-            }
+        if(fileChunk){
+            
         }
-    },[fileData])
+    },[fileChunk])
 
     useEffect(()=>{
         if(pc && initiator){
+            debugger; //4
             let channel = pc.createDataChannel('chat');
 			channel.onopen = () => {
 				setConnected(true);
@@ -47,19 +40,19 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
 			};
             setDatachannel(channel) ;
             
-         
         }
     },[pc,initiator])
 
     useEffect(()=>{
         if(pc && datachannel && initiator){
+            debugger; //5
             pc.createOffer()
             .then((localOffer)=> {
-                debugger;
+                debugger;  //6
                 pc.setLocalDescription(localOffer);
             })
             .then(()=>{
-                debugger;
+                debugger; //7
                 sendSignalingMessage({type:'file-offer', sdp:pc.localDescription})
 
             })
@@ -70,9 +63,11 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
         }
     },[datachannel,pc,initiator])
 
+
     useEffect(()=>{
 
         if(pc && remoteOffer){
+            debugger; //11
             pc.ondatachannel = (event) => {
                 let channel = event.channel;
                 channel.onopen = () => {
@@ -96,17 +91,23 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
    
     },[pc, remoteOffer])
 
-    useEffect(()=>{
-        if(remoteOffer)
-        createRTCPeerConnection(iceServers)
-    },[remoteOffer])
+
     
 
     useEffect(()=>{
         if(pc && remoteOffer && datachannel){
+            debugger ; //12
             pc.setRemoteDescription(remoteOffer)
+            .then(()=>{
+                debugger; //13
+                return pc.createAnswer()
+            })
+            .then((localAnswer)=>{
+                debugger; //14
+                pc.setLocalDescription(localAnswer);
+            })
             .then(() => {
-                debugger;
+                debugger; //15
                 if (remoteIceCandidates.length > 0) {
                     for (let ice in remoteIceCandidates) {
                         if (ice) {
@@ -114,14 +115,6 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
                         }
                     }
                 }
-            })
-            .then(()=>{
-                debugger;
-                return pc.createAnswer()
-            })
-            .then((localAnswer)=>{
-                debugger;
-                pc.setLocalDescription(localAnswer);
             })
             .catch((err)=>{
                 debugger;
@@ -140,7 +133,9 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
         if(signalingMessage){
             switch(signalingMessage.type){
                 case 'file-offer':
+                    createRTCPeerConnection(iceServers)
                     setRemoteOffer(signalingMessage.sdp);
+                    debugger; //8
                     break;
                 case 'file-answer':
                     remoteAnswerRecieved(signalingMessage.sdp)
@@ -170,6 +165,7 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
 
 
     function createLocalOffer (){
+        debugger; //2
         createRTCPeerConnection()
         setInitiator(true);
     }
@@ -179,6 +175,7 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
     }
 
     function createRTCPeerConnection(){
+        debugger; //3  //10
     	let peerCon = new RTCPeerConnection(iceServers);
 		peerCon.onicecandidate = function(e) {
 			if (e.candidate) {
@@ -199,7 +196,6 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
 		};
 		setPc(peerCon);
         
-
     }
 
     function remoteAnswerRecieved (answer){
@@ -233,6 +229,7 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
     function handleSendMessage (type){
         switch(type){
             case 'file-offer':
+                debugger; // 1
             createLocalOffer();
             break;
             case 'file-answer':

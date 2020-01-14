@@ -8,23 +8,42 @@ export default function useFileReader (){
     const [fileChunk, setFileChunk] =useState(null);
     const [reader,setReader]=useState(null);
     const [error,setError] =useState(null);
-
+    const [nextSlice,setNextSlice] =useState(0);
+    const [readProgress,setReadProcess]= useState(0);
     useEffect(()=>{
-        createFileReader()
-
-    },[])
+        if(slices){
+            createFileReader()
+        }
+     
+    },[slices])
     useEffect(()=>{
         if(files){
             setFile(files[0])
-            debugger;
         }
     },[files])
     useEffect(()=>{
         if(file){
             sliceFile(file);
-         debugger;
         }
     },[file])
+
+  useEffect(()=>{
+      if(nextSlice && nextSlice < slices.length){
+          readNextSlice();
+  
+            let progress =(((nextSlice* BYTES_PER_CHUNK) * 100)/ file.size ).toFixed()
+            setReadProcess(progress)
+          
+      
+      }
+  },[nextSlice,slices])
+
+  useEffect(()=>{
+      if(readProgress ==="100"){
+       debugger;
+      }
+  },[readProgress])
+
     function handleFileChange (e){
         setFiles(e.target.files);
     }
@@ -45,14 +64,18 @@ export default function useFileReader (){
 
         }
         rd.onloadend =(r)=>{
+        
             if (r.target.readyState === FileReader.DONE) {
                 var chunk = r.target.result
                 setFileChunk(chunk)
+                if(nextSlice <= slices.length){
+                    setNextSlice(prev =>  ++ prev)
+                }
             }
         }
 
-        rd.onprogress =()=>{
-
+        rd.onprogress =(e)=>{
+          
         }
 
         rd.onabort =()=>{
@@ -63,26 +86,24 @@ export default function useFileReader (){
     }
 
     function sliceFile(file){
-        debugger;
         const size =file.size;
         let start =0;
-            for (start; start < size; start * BYTES_PER_CHUNK){
-                let end = Math.min(file.size, start + BYTES_PER_CHUNK)
-                debugger;
-                setSlices(prev => [...prev,{start,end}])
+        let list =[]
+            while(start< size){
+                let end = Math.min(size, start+ BYTES_PER_CHUNK)
+                list.push({start,end})
+                start =start+ BYTES_PER_CHUNK;
             }
+            setSlices(list);
     }
 
 
-    function handleReadFileBySlice (){
-        for (let slice in slices){
-            if(slice){
-                reader.readAsArrayBuffer(file.slice(slice.start, slice.end))
-            }
-        }
-   
+    function startReadingFileBySlice (){
+         readNextSlice()
     }
 
- 
-    return {handleFileChange, file, fileChunk, handleReadFileBySlice,error}
+     function readNextSlice (){
+        reader.readAsArrayBuffer(file.slice(slices[nextSlice].start, slices[nextSlice].end))
+     }
+    return {handleFileChange, file, fileChunk, startReadingFileBySlice,error, readProgress}
 }

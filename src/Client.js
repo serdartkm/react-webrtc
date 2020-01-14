@@ -10,7 +10,7 @@ import "./css/style.css";
 export default function Client({ currentUser, name, target,roomId='0d3729a6-d4c2-4af0-8e7a-1efc9ea0f428'}) {
 
   const {signalingMessage, sendSignalingMessage,error: signalingError}= usePusherSignaling({currentUser,roomId,target,name})
-  const {handleFileChange, file, error:readerError} = useFileReader()
+  const {handleFileChange, file, error:readerError, readProgress} = useFileReader()
   const {handleSendMessage, error:webRTCError, state} =useWebRTC({sendSignalingMessage,signalingMessage})
 
   if(signalingError){
@@ -26,10 +26,10 @@ export default function Client({ currentUser, name, target,roomId='0d3729a6-d4c2
     <div className="client">
       <div className="client-top">
         {!file &&  <FileSelectorView handleFileChange={handleFileChange} />}
-        {file && <FileTransferView state={state} handleSendMessage={handleSendMessage} />}
+        {file && <FileTransferView state={state} handleSendMessage={handleSendMessage} readProgress={readProgress} />}
       </div>
       <div className="client-bottom">
-        <WebRTCState />
+        <WebRTCState state={state} />
       </div>
     </div>
   );
