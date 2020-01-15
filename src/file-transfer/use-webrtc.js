@@ -17,7 +17,7 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
 
     useEffect(()=>{
         if(fileChunk){
-            
+            sendFileChunk(fileChunk);
         }
     },[fileChunk])
 
@@ -25,11 +25,12 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
         if(pc && initiator){
          
             let channel = pc.createDataChannel('chat');
+          //  channel.binaryType = 'arraybuffer'
 			channel.onopen = () => {
 				setConnected(true);
 			};
 			channel.onmessage = (event) => {
-			
+                debugger;
 			//	setMessage(JSON.parse(event.data));
 			};
 			channel.onclose =() => {
@@ -95,10 +96,6 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
                
                   pc.setLocalDescription(localAnswer);
               })
-              .then(()=>{
-                
-                  sendSignalingMessage({type:'file-answer', sdp:pc.localDescription})
-              })
               .then(() => {
                  
                   if (remoteIceCandidates.length > 0) {
@@ -117,15 +114,6 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
    
     },[pc, remoteOffer])
 
-
-    
-
-
-    useEffect(()=>{
-        if(message){
-            sendMessage();
-        }
-    },[message])
 
     useEffect(()=>{
         if(signalingMessage){
@@ -154,15 +142,6 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
     },[signalingMessage])
 
  
-
-
-
-    function sendMessage (){
-
-    }
-    
-
-
     function createLocalOffer (){
       
         createRTCPeerConnection()
@@ -170,6 +149,7 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
     }
 
     function sendLocalAnswer (){
+        debugger;
         sendSignalingMessage({type:'file-answer', sdp:pc.localDescription})
     }
 
@@ -198,7 +178,7 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
     }
 
     function remoteAnswerRecieved (answer){
-       
+        debugger;
         if (pc.setLocalDescription  && pc.remoteDescription===null) {
 			pc.setRemoteDescription(answer)
 				.then(() => {
@@ -210,7 +190,12 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
 							}
 						}
 					}
-				})
+                })
+                .then(()=>{
+                    debugger;
+                    startReadingFileBySlice();
+              
+                })
 				
 				.catch(err => {
 					debugger;
@@ -230,7 +215,7 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
     function handleSendMessage (type){
         switch(type){
             case 'file-offer':
-             
+             debugger;
             createLocalOffer();
             break;
             case 'file-answer':
@@ -240,6 +225,19 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
             break;
             default:
         }
+    }
+
+    function sendFileChunk (fileChunk){
+        debugger
+        datachannel.channel.binaryType = 'arraybuffer'
+        datachannel.send(fileChunk);
+        debugger;
+        if(readProgress<100){
+            
+            debugger;
+            startReadingFileBySlice();
+        }
+     
     }
 
     return {handleSendMessage, state:{iceConnectionState,iceGatheringState,connectionState,signalingState},error}

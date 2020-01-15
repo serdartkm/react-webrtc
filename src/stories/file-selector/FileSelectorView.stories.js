@@ -5,7 +5,9 @@ import FileInfo from '../../file-reader/ui-components/file-info-view'
 const style ={
     root:{
         height:'100vh',
-       
+        display:'flex',
+        flexDirection:'column'
+
     }
 }
 

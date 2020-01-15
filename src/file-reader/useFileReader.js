@@ -29,17 +29,17 @@ export default function useFileReader (){
 
   useEffect(()=>{
       if(nextSlice && nextSlice < slices.length){
-          readNextSlice();
+         
   
             let progress =(((nextSlice* BYTES_PER_CHUNK) * 100)/ file.size ).toFixed()
-            setReadProcess(progress)
+            setReadProcess(Number.parseInt(progress))
           
       
       }
   },[nextSlice,slices])
 
   useEffect(()=>{
-      if(readProgress ==="100"){
+      if(readProgress ===100){
        debugger;
       }
   },[readProgress])
