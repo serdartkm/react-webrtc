@@ -1,11 +1,13 @@
 import React, {useEffect, useState} from 'react'
 import iceServers from './ice-servers';
-
-export default function useWebRTC ({signalingMessage,sendSignalingMessage,message, readProgress,startReadingFileBySlice, fileChunk}){
+const BYTES_PER_CHUNK=100;
+export default function useWebRTC ({signalingMessage,sendSignalingMessage, readProgress,startReadingFileBySlice, fileChunk,file}){
     const [pc, setPc] = useState(null);
     const [error, setError] = useState(null);
     const [remoteIceCandidates, setRemoteIceCandidates] = useState([]);
-	const [remoteOffer, setRemoteOffer] = useState(null);
+    const [remoteOffer, setRemoteOffer] = useState(null);
+    const [remoteFile,setRemoteFile]= useState(null);
+    const [bytesRecieved,setBytesRecieved]= useState(0)
 	const [initiator, setInitiator] = useState(false);
 	const [connected,setConnected] =useState(false);
 	const [datachannel,setDatachannel]=useState(null);
@@ -13,13 +15,35 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
 	const [connectionState, setConnectionState] = useState(null);
 	const [iceConnectionState, setIceConnectionState] = useState(null);
     const [iceGatheringState, setIceGatheringState] = useState(null);
-    
+    const [incomingFileData,setIncomingFileData]= useState([]);
+    const [downloadProgress,setDownloadProgress]=useState(0);
+
+
+    useEffect(()=>{
+        if(bytesRecieved>0){
+            debugger;
+            let progress =((bytesRecieved * 100)/ remoteFile.size ).toFixed()
+            setDownloadProgress(Number.parseInt(progress))
+            debugger;
+        }
+    },[bytesRecieved])
+ 
+
+    useEffect(()=>{
+        debugger;
+        if(downloadProgress>0){
+            debugger;
+        }
+    },[downloadProgress])
 
     useEffect(()=>{
         if(fileChunk){
+            debugger;
             sendFileChunk(fileChunk);
         }
     },[fileChunk])
+   
+
 
     useEffect(()=>{
         if(pc && initiator){
@@ -31,13 +55,14 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
 			};
 			channel.onmessage = (event) => {
                 debugger;
-			//	setMessage(JSON.parse(event.data));
+         
 			};
 			channel.onclose =() => {
 				setConnected(false);
 			};
 			channel.onerror = (err) => {
-				setError(err);
+                setError(err);
+                debugger;
 			};
             setDatachannel(channel) ;
             
@@ -53,8 +78,8 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
                 pc.setLocalDescription(localOffer);
             })
             .then(()=>{
-              
-                sendSignalingMessage({type:'file-offer', sdp:pc.localDescription})
+              debugger;
+                sendSignalingMessage({type:'file-offer', sdp:pc.localDescription,file})
 
             })
             .catch((err)=>{
@@ -75,8 +100,10 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
                     setConnected(true);
                 };
                 channel.onmessage = (event) => {
-           
-                   // setMessage(JSON.parse(event.data));
+                    debugger;
+                    setIncomingFileData(prevState => [...prevState,event.data])
+                    setBytesRecieved(prevState => prevState + event.data.byteLength)
+               
                 };
                 channel.onclose =() => {
                     setConnected(false);
@@ -84,6 +111,7 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
                 };
                 channel.onerror = (err) => {
                     setError(err);
+                    debugger;
                 };
                 setDatachannel(channel);
               };
@@ -121,7 +149,8 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
                 case 'file-offer':
                     createRTCPeerConnection(iceServers)
                     setRemoteOffer(signalingMessage.sdp);
-                
+                    setRemoteFile(signalingMessage.file)
+                    debugger;
                     break;
                 case 'file-answer':
                
@@ -229,7 +258,7 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
 
     function sendFileChunk (fileChunk){
         debugger
-        datachannel.channel.binaryType = 'arraybuffer'
+      //  datachannel.channel.binaryType = 'arraybuffer'
         datachannel.send(fileChunk);
         debugger;
         if(readProgress<100){
@@ -240,5 +269,5 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage,messag
      
     }
 
-    return {handleSendMessage, state:{iceConnectionState,iceGatheringState,connectionState,signalingState},error}
+    return {handleSendMessage, state:{iceConnectionState,iceGatheringState,connectionState,signalingState},error,downloadProgress}
 }

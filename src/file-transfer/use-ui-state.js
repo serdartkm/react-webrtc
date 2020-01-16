@@ -27,6 +27,7 @@ useEffect(()=>{
 
 useEffect(()=>{
     if(readProgress>0){
+        debugger;
         setSendingFile(true);
     }
     if(readProgress===100){
