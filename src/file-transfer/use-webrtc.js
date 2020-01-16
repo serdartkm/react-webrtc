@@ -1,13 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React,{useEffect, useState} from 'react'
+import{useEffect, useState} from 'react'
 import iceServers from './ice-servers';
+import useFileAssembler from './useFileAssembler'
 export default function useWebRTC ({signalingMessage,sendSignalingMessage, readProgress,startReadingFileBySlice, fileChunk,file}){
     const [pc, setPc] = useState(null);
     const [error, setError] = useState(null);
     const [remoteIceCandidates, setRemoteIceCandidates] = useState([]);
     const [remoteOffer, setRemoteOffer] = useState(null);
     const [remoteFile,setRemoteFile]= useState(null);
-    const [bytesRecieved,setBytesRecieved]= useState(0)
 	const [initiator, setInitiator] = useState(false);
 	const [connected,setConnected] =useState(false);
 	const [datachannel,setDatachannel]=useState(null);
@@ -15,33 +15,10 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
 	const [connectionState, setConnectionState] = useState(null);
 	const [iceConnectionState, setIceConnectionState] = useState(null);
     const [iceGatheringState, setIceGatheringState] = useState(null);
-    const [incomingFileData,setIncomingFileData]= useState([]);
-    const [downloadProgress,setDownloadProgress]=useState(0);
-    const [assembledFile,setAssembledFile]= useState(null);
+    const [remoteFileChunk,setRemoteFileChunk]=useState(null);
+    const {downloadProgress,assembledFile} =useFileAssembler({fileChunk:remoteFileChunk,fileInfo:remoteFile})
 
   
-
-    useEffect(()=>{
-        if(bytesRecieved>0){
-         
-            let progress =((bytesRecieved * 100)/ remoteFile.size ).toFixed()
-            setDownloadProgress(Number.parseInt(progress))
-          
-        }
-     
-        if(remoteFile && bytesRecieved=== remoteFile.size){
-            debugger;
-            setAssembledFile( new Blob(incomingFileData))
-        }
-    },[bytesRecieved,remoteFile])
- 
-
-    useEffect(()=>{
-     
-        if(downloadProgress===100) {
-            debugger;
-        }
-    },[downloadProgress])
 
     useEffect(()=>{
         if(fileChunk){
@@ -60,10 +37,7 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
 			channel.onopen = () => {
 				setConnected(true);
 			};
-			channel.onmessage = (event) => {
-           
-         
-			};
+	
 			channel.onclose =() => {
 				setConnected(false);
 			};
@@ -88,7 +62,6 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
           
               const fileInfo ={size:file.size,name:file.name,type:file.type}
                 sendSignalingMessage({type:'file-offer', sdp:pc.localDescription,fileInfo })
-
             })
             .catch((err)=>{
                 debugger;
@@ -108,10 +81,7 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
                     setConnected(true);
                 };
                 channel.onmessage = (event) => {
-                  
-                    setIncomingFileData(prevState => [...prevState,event.data])
-                    setBytesRecieved(prevState => prevState + event.data.byteLength)
-               
+                    setRemoteFileChunk(event.data)
                 };
                 channel.onclose =() => {
                     setConnected(false);
@@ -264,13 +234,10 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
       //  datachannel.channel.binaryType = 'arraybuffer'
         datachannel.send(fileChunk);
      
-        if(readProgress<100){
-            
-           
             startReadingFileBySlice();
-        }
+        
      
     }
 
-    return {handleSendMessage, state:{iceConnectionState,iceGatheringState,connectionState,signalingState},error,downloadProgress}
+    return {handleSendMessage, state:{iceConnectionState,iceGatheringState,connectionState,signalingState},error,downloadProgress,assembledFile}
 }

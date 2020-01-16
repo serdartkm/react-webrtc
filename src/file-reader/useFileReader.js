@@ -1,4 +1,4 @@
-import React,{useState, useEffect} from 'react'
+import {useState, useEffect} from 'react'
 
 const BYTES_PER_CHUNK= 100;
 export default function useFileReader (){
@@ -100,8 +100,10 @@ export default function useFileReader (){
 
 
     function startReadingFileBySlice (){
-       
-         readNextSlice()
+       if(nextSlice <slices.length){
+        readNextSlice()
+       }
+   
     }
 
      function readNextSlice (){

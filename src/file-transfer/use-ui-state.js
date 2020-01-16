@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from 'react'
+import {useState,useEffect} from 'react'
 
 
 export default function useUIState ({state, file, readProgress, downloadProgress}){
@@ -28,7 +28,6 @@ useEffect(()=>{
 useEffect(()=>{
   
     if(readProgress>0){
-       
         setSendingFile(true);
     }
     if(readProgress===100){
@@ -45,7 +44,6 @@ useEffect(()=>{
     if(downloadProgress===100){
         setRecievingFile(false);
         setRecievingComplete(true);
-       
     }
 },[downloadProgress])
 
