@@ -5,7 +5,7 @@ import classNames from 'classnames'
 
 const CircularPercentageBar = ({percent}) => {
    // console.log("percent---",percent)
-    return ( <div className="circle-container"> <div className={classNames('c100',{[`p${percent}`]:`p${percent}`})}>
+    return ( <div className="circle-container"> <div className={classNames('c100 p25 small',{[`p${percent}`]:`p${percent}`})}>
 
         <span>{percent}%</span>
 

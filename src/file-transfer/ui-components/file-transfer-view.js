@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import FileSelectorView from "../../file-reader/ui-components/file-selector-view";
 import CircularPercentageBar from "./CircularPercentageBar";
 import "./css/style.css";
@@ -6,7 +6,9 @@ import "./css/style.css";
 export default function FileTransferView({
   handleSendMessage,
   uiState,
-  handleFileChange
+  handleFileChange,
+  downloadProgress,
+  readProgress
 }) {
   const {
     fileSelected,
@@ -16,8 +18,12 @@ export default function FileTransferView({
     sendingComplete,
     recievingComplete
   } = uiState;
-  function sendOffer() {
+
+  useEffect(()=>{
     debugger;
+  },[sendingFile])
+
+  function sendOffer() {
     handleSendMessage("file-offer");
   }
 
@@ -37,7 +43,7 @@ export default function FileTransferView({
     return (
       <div className="file-transfer">
         <div>
-          <CircularPercentageBar percent={50} />
+          <CircularPercentageBar percent={downloadProgress} />
         </div>
         <div className="btn-container">
           <button onClick={sendCancel}>Cancel Recieving</button>
@@ -47,9 +53,10 @@ export default function FileTransferView({
   }
 
   if (sendingFile) {
+    debugger;
     return (
       <div className="file-transfer">
-        <CircularPercentageBar percent={50} />
+        <CircularPercentageBar percent={readProgress} />
 
         <div className="btn-container">
           <button onClick={sendCancel}>Cancel Sending</button>

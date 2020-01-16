@@ -20,25 +20,31 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
 
 
     useEffect(()=>{
+        if(readProgress){
+        debugger;
+        }
+    },[readProgress])
+
+    useEffect(()=>{
         if(bytesRecieved>0){
-            debugger;
+         
             let progress =((bytesRecieved * 100)/ remoteFile.size ).toFixed()
             setDownloadProgress(Number.parseInt(progress))
-            debugger;
+          
         }
     },[bytesRecieved])
  
 
     useEffect(()=>{
-        debugger;
+     
         if(downloadProgress>0){
-            debugger;
+       
         }
     },[downloadProgress])
 
     useEffect(()=>{
         if(fileChunk){
-            debugger;
+          
             sendFileChunk(fileChunk);
         }
     },[fileChunk])
@@ -54,7 +60,7 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
 				setConnected(true);
 			};
 			channel.onmessage = (event) => {
-                debugger;
+           
          
 			};
 			channel.onclose =() => {
@@ -78,8 +84,9 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
                 pc.setLocalDescription(localOffer);
             })
             .then(()=>{
-              debugger;
-                sendSignalingMessage({type:'file-offer', sdp:pc.localDescription,file})
+          
+              const fileInfo ={size:file.size,name:file.name,type:file.type}
+                sendSignalingMessage({type:'file-offer', sdp:pc.localDescription,fileInfo })
 
             })
             .catch((err)=>{
@@ -100,7 +107,7 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
                     setConnected(true);
                 };
                 channel.onmessage = (event) => {
-                    debugger;
+                  
                     setIncomingFileData(prevState => [...prevState,event.data])
                     setBytesRecieved(prevState => prevState + event.data.byteLength)
                
@@ -149,8 +156,8 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
                 case 'file-offer':
                     createRTCPeerConnection(iceServers)
                     setRemoteOffer(signalingMessage.sdp);
-                    setRemoteFile(signalingMessage.file)
-                    debugger;
+                    setRemoteFile(signalingMessage.fileInfo)
+                  
                     break;
                 case 'file-answer':
                
@@ -178,7 +185,7 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
     }
 
     function sendLocalAnswer (){
-        debugger;
+        
         sendSignalingMessage({type:'file-answer', sdp:pc.localDescription})
     }
 
@@ -207,7 +214,7 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
     }
 
     function remoteAnswerRecieved (answer){
-        debugger;
+      
         if (pc.setLocalDescription  && pc.remoteDescription===null) {
 			pc.setRemoteDescription(answer)
 				.then(() => {
@@ -221,9 +228,7 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
 					}
                 })
                 .then(()=>{
-                    debugger;
                     startReadingFileBySlice();
-              
                 })
 				
 				.catch(err => {
@@ -244,7 +249,7 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
     function handleSendMessage (type){
         switch(type){
             case 'file-offer':
-             debugger;
+           
             createLocalOffer();
             break;
             case 'file-answer':
@@ -257,13 +262,13 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
     }
 
     function sendFileChunk (fileChunk){
-        debugger
+    
       //  datachannel.channel.binaryType = 'arraybuffer'
         datachannel.send(fileChunk);
-        debugger;
+     
         if(readProgress<100){
             
-            debugger;
+           
             startReadingFileBySlice();
         }
      

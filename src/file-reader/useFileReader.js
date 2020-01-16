@@ -23,7 +23,7 @@ export default function useFileReader (){
     },[files])
     useEffect(()=>{
         if(file){
-            debugger;
+         
             sliceFile(file);
         }
     },[file])
@@ -41,7 +41,7 @@ export default function useFileReader (){
 
   useEffect(()=>{
       if(readProgress ===100){
-       debugger;
+    
       }
   },[readProgress])
 
@@ -100,7 +100,7 @@ export default function useFileReader (){
 
 
     function startReadingFileBySlice (){
-        debugger;
+       
          readNextSlice()
     }
 

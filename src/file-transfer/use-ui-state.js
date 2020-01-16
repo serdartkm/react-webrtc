@@ -3,7 +3,7 @@ import React,{useState,useEffect} from 'react'
 
 export default function useUIState ({state, file, readProgress, downloadProgress}){
     const {signalingState} = state
-    const [sendlingFile,setSendingFile]= useState(false);
+    const [sendingFile,setSendingFile]= useState(false);
     const [recievingFile,setRecievingFile]= useState(false);
     const [fileSelected,setFileSelected]= useState(false);
     const [remoteOfferRecieved,setRemoteOfferRecived]= useState(false);
@@ -26,6 +26,7 @@ useEffect(()=>{
 },[signalingState])
 
 useEffect(()=>{
+    debugger
     if(readProgress>0){
         debugger;
         setSendingFile(true);
@@ -48,5 +49,5 @@ useEffect(()=>{
     }
 },[downloadProgress])
 
-    return {uiState:{sendlingFile,recievingFile,fileSelected, remoteOfferRecieved,sendingComplete,recievingComplete}}
+    return {uiState:{sendingFile,recievingFile,fileSelected, remoteOfferRecieved,sendingComplete,recievingComplete}}
 }
