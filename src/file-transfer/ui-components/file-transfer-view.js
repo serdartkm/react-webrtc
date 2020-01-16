@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useState} from "react";
 import FileSelectorView from "../../file-reader/ui-components/file-selector-view";
 import CircularPercentageBar from "./CircularPercentageBar";
 import "./css/style.css";
@@ -8,6 +8,7 @@ export default function FileTransferView({
   uiState,
   handleFileChange,
   downloadProgress,
+  closeDataChannel,
   readProgress
 }) {
   const {
@@ -16,9 +17,10 @@ export default function FileTransferView({
     sendingFile,
     recievingFile,
     sendingComplete,
-    recievingComplete
+    recievingComplete,
+    haveLocalOffer
   } = uiState;
-
+  const [haveLocalAnswer,setHaveLocalAnswer]= useState(false);
 
 
   function sendOffer() {
@@ -26,7 +28,9 @@ export default function FileTransferView({
   }
 
   function sendAnswer() {
+    setHaveLocalAnswer(true);
     handleSendMessage("file-answer");
+  
   }
 
   function sendDecline() {
@@ -68,7 +72,7 @@ export default function FileTransferView({
       <div className="file-transfer">
         <div>Recieving Complete</div>
         <div>
-          <button>Ok</button>
+          <button onClick={closeDataChannel}>Ok</button>
         </div>
       </div>
     );
@@ -79,7 +83,7 @@ export default function FileTransferView({
       <div className="file-transfer">
         <div>Sending Complete</div>
         <div>
-          <button>Ok</button>
+          <button onClick={closeDataChannel}>Ok</button>
         </div>
       </div>
     );
@@ -88,8 +92,8 @@ export default function FileTransferView({
     return (
       <div className="file-transfer">
         <div className="btn-container">
-          <button onClick={sendAnswer}>Accept</button>
-          <button onClick={sendDecline}>Decline</button>
+          <button disabled={haveLocalAnswer} onClick={sendAnswer}>Accept</button>
+          <button disabled={haveLocalAnswer} onClick={sendDecline}>Decline</button>
         </div>
       </div>
     );
@@ -102,8 +106,8 @@ export default function FileTransferView({
   return (
     <div className="file-transfer">
       <div className="btn-container">
-        <button onClick={sendOffer}>Send File</button>
-        <button onClick={sendOffer}>Cancel</button>
+        <button disabled={haveLocalOffer}  onClick={sendOffer}>Send File</button>
+        <button  disabled={haveLocalOffer} onClick={sendOffer}>Cancel</button>
       </div>
     </div>
   );

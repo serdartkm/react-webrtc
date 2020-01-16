@@ -7,18 +7,16 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
     const [error, setError] = useState(null);
     const [remoteIceCandidates, setRemoteIceCandidates] = useState([]);
     const [remoteOffer, setRemoteOffer] = useState(null);
-    const [remoteFile,setRemoteFile]= useState(null);
+    const [remoteFileInfo,setRemoteFileInfo]= useState(null);
 	const [initiator, setInitiator] = useState(false);
-	const [connected,setConnected] =useState(false);
 	const [datachannel,setDatachannel]=useState(null);
 	const [signalingState, setSignalingState] = useState(null);
 	const [connectionState, setConnectionState] = useState(null);
 	const [iceConnectionState, setIceConnectionState] = useState(null);
     const [iceGatheringState, setIceGatheringState] = useState(null);
     const [remoteFileChunk,setRemoteFileChunk]=useState(null);
-    const {downloadProgress,assembledFile} =useFileAssembler({fileChunk:remoteFileChunk,fileInfo:remoteFile})
-
-  
+    const [datachannelState,setDatachannelState] =useState('');
+    const {downloadProgress,assembledFile} =useFileAssembler({fileChunk:remoteFileChunk,fileInfo:remoteFileInfo})
 
     useEffect(()=>{
         if(fileChunk){
@@ -26,20 +24,18 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
             sendFileChunk(fileChunk);
         }
     },[fileChunk])
-   
-
 
     useEffect(()=>{
         if(pc && initiator){
          
             let channel = pc.createDataChannel('chat');
           //  channel.binaryType = 'arraybuffer'
-			channel.onopen = () => {
-				setConnected(true);
-			};
 	
+            channel.onopen =()=>{
+                startReadingFileBySlice();
+            }
 			channel.onclose =() => {
-				setConnected(false);
+				
 			};
 			channel.onerror = (err) => {
                 setError(err);
@@ -77,16 +73,17 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
       
             pc.ondatachannel = (event) => {
                 let channel = event.channel;
-                channel.onopen = () => {
-                    setConnected(true);
-                };
+     
                 channel.onmessage = (event) => {
                     setRemoteFileChunk(event.data)
                 };
                 channel.onclose =() => {
-                    setConnected(false);
+                 setDatachannelState('closed');
     
                 };
+                channel.onopen =()=>{
+                    setDatachannelState('open');
+                }
                 channel.onerror = (err) => {
                     setError(err);
                     debugger;
@@ -127,7 +124,7 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
                 case 'file-offer':
                     createRTCPeerConnection(iceServers)
                     setRemoteOffer(signalingMessage.sdp);
-                    setRemoteFile(signalingMessage.fileInfo)
+                    setRemoteFileInfo(signalingMessage.fileInfo)
                     break;
                 case 'file-answer':
                     remoteAnswerRecieved(signalingMessage.sdp)
@@ -195,10 +192,6 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
 						}
 					}
                 })
-                .then(()=>{
-                    startReadingFileBySlice();
-                })
-				
 				.catch(err => {
 					debugger;
 					setError(err)});
@@ -235,9 +228,10 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
         datachannel.send(fileChunk);
      
             startReadingFileBySlice();
-        
-     
     }
 
-    return {handleSendMessage, state:{iceConnectionState,iceGatheringState,connectionState,signalingState},error,downloadProgress,assembledFile}
+    function closeDataChannel (){
+        datachannel.close()
+    }
+    return {handleSendMessage, state:{iceConnectionState,iceGatheringState,connectionState,signalingState,datachannelState},error,downloadProgress,assembledFile,closeDataChannel}
 }

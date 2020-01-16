@@ -9,6 +9,8 @@ export default function useUIState ({state, file, readProgress, downloadProgress
     const [remoteOfferRecieved,setRemoteOfferRecived]= useState(false);
     const [sendingComplete,setSendingComplete]= useState(false);
     const [recievingComplete,setRecievingComplete]= useState(false);
+    const [haveLocalOffer,setHaveLocalOffer]= useState(false);
+    
 
 useEffect(()=>{
 if(file){
@@ -22,6 +24,9 @@ else{
 useEffect(()=>{
     if(signalingState==='have-remote-offer'){
         setRemoteOfferRecived(true)
+    }
+    if(signalingState==='have-local-offer'){
+        setHaveLocalOffer(true);
     }
 },[signalingState])
 
@@ -47,5 +52,5 @@ useEffect(()=>{
     }
 },[downloadProgress])
 
-    return {uiState:{sendingFile,recievingFile,fileSelected, remoteOfferRecieved,sendingComplete,recievingComplete}}
+    return {uiState:{sendingFile,recievingFile,fileSelected, remoteOfferRecieved,sendingComplete,recievingComplete, haveLocalOffer}}
 }
