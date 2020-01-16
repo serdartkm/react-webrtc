@@ -1,11 +1,11 @@
 table {
   border-collapse: collapse;
   width: 100%;
-  zoom: 50%;
 }
 
 th,
 td {
+  font-size: 10px;
   text-align: left;
   border: 1px solid #ccc;
 }
@@ -17,5 +17,6 @@ tbody tr:nth-child(odd) {
 .table-container {
   height: 200px;
   background-color: #c5cae9;
+  zoom: 40%;
 }
 /*# sourceMappingURL=style.css.map */
