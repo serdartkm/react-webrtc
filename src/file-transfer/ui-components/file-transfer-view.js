@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React from "react";
 import FileSelectorView from "../../file-reader/ui-components/file-selector-view";
 import CircularPercentageBar from "./CircularPercentageBar";
 import "./css/style.css";
@@ -19,9 +19,7 @@ export default function FileTransferView({
     recievingComplete
   } = uiState;
 
-  useEffect(()=>{
-    debugger;
-  },[sendingFile])
+
 
   function sendOffer() {
     handleSendMessage("file-offer");
@@ -53,7 +51,7 @@ export default function FileTransferView({
   }
 
   if (sendingFile) {
-    debugger;
+ 
     return (
       <div className="file-transfer">
         <CircularPercentageBar percent={readProgress} />

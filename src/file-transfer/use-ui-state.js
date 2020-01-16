@@ -26,9 +26,9 @@ useEffect(()=>{
 },[signalingState])
 
 useEffect(()=>{
-    debugger
+  
     if(readProgress>0){
-        debugger;
+       
         setSendingFile(true);
     }
     if(readProgress===100){

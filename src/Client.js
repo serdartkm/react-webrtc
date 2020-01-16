@@ -1,4 +1,4 @@
-import React,{useEffect} from "react";
+import React from "react";
 import WebRTCState from "./common/webrtc-connection-state";
 import FileTransferView from './file-transfer/ui-components/file-transfer-view';
 import usePusherSignaling from './signaling/pusher/usePusherSignaling'
@@ -14,9 +14,7 @@ export default function Client({ currentUser, name, target,roomId='0d3729a6-d4c2
   const {handleSendMessage, error:webRTCError,downloadProgress, state} =useWebRTC({readProgress,fileChunk,sendSignalingMessage,signalingMessage,startReadingFileBySlice,file})
   const {uiState}= useUIState({state,file,readProgress,downloadProgress})
  
- useEffect(()=>{
-   debugger;
- },[readProgress])
+
  
   if(signalingError){
     return <ErrorMessage error={signalingError}/>

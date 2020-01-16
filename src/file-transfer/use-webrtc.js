@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+import React,{useEffect, useState} from 'react'
 import iceServers from './ice-servers';
-const BYTES_PER_CHUNK=100;
 export default function useWebRTC ({signalingMessage,sendSignalingMessage, readProgress,startReadingFileBySlice, fileChunk,file}){
     const [pc, setPc] = useState(null);
     const [error, setError] = useState(null);
@@ -17,13 +17,9 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
     const [iceGatheringState, setIceGatheringState] = useState(null);
     const [incomingFileData,setIncomingFileData]= useState([]);
     const [downloadProgress,setDownloadProgress]=useState(0);
+    const [assembledFile,setAssembledFile]= useState(null);
 
-
-    useEffect(()=>{
-        if(readProgress){
-        debugger;
-        }
-    },[readProgress])
+  
 
     useEffect(()=>{
         if(bytesRecieved>0){
@@ -32,13 +28,18 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
             setDownloadProgress(Number.parseInt(progress))
           
         }
-    },[bytesRecieved])
+     
+        if(remoteFile && bytesRecieved=== remoteFile.size){
+            debugger;
+            setAssembledFile( new Blob(incomingFileData))
+        }
+    },[bytesRecieved,remoteFile])
  
 
     useEffect(()=>{
      
-        if(downloadProgress>0){
-       
+        if(downloadProgress===100) {
+            debugger;
         }
     },[downloadProgress])
 
@@ -157,10 +158,8 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
                     createRTCPeerConnection(iceServers)
                     setRemoteOffer(signalingMessage.sdp);
                     setRemoteFile(signalingMessage.fileInfo)
-                  
                     break;
                 case 'file-answer':
-               
                     remoteAnswerRecieved(signalingMessage.sdp)
                     break;
                 case 'file-decline':
@@ -179,7 +178,6 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
 
  
     function createLocalOffer (){
-      
         createRTCPeerConnection()
         setInitiator(true);
     }
