@@ -6,7 +6,7 @@ export default {
 };
 
 const state ={
-    signalingState:'',connectionState:'',iceConnectionState:'',iceGatheringState:''
+    signalingState:'',connectionState:'',iceConnectionState:'',iceGatheringState:'', datachannelState:''
 }
 
 export const webRTCConnectionState = () => <div style={{height:200}}><WebRTCConnectionState  state={state}/></div> 
