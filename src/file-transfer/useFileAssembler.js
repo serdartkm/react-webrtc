@@ -21,7 +21,7 @@ export default function useFileAssembler ({fileChunk,fileInfo}){
          
             let progress =((bytesRecieved * 100)/ fileInfo.size ).toFixed()
             setDownloadProgress(Number.parseInt(progress))
-          
+      
         }
      
         if(fileInfo && bytesRecieved=== fileInfo.size){

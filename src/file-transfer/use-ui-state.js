@@ -28,6 +28,15 @@ useEffect(()=>{
     if(signalingState==='have-local-offer'){
         setHaveLocalOffer(true);
     }
+    if(signalingState==='closed'){
+        setSendingFile(false);
+        setRecievingFile(false);
+        setFileSelected(false);
+        setRemoteOfferRecived(false);
+        setSendingComplete(false);
+        setRecievingComplete(false);
+        setHaveLocalOffer(false);
+    }
 },[signalingState])
 
 useEffect(()=>{

@@ -1,4 +1,4 @@
-import React,{useState} from "react";
+import React,{useState, useRef,useEffect} from "react";
 import FileSelectorView from "../../file-reader/ui-components/file-selector-view";
 import CircularPercentageBar from "./CircularPercentageBar";
 import "./css/style.css";
@@ -9,6 +9,8 @@ export default function FileTransferView({
   handleFileChange,
   downloadProgress,
   closeDataChannel,
+  assembledFile,
+  fileInfo,
   readProgress
 }) {
   const {
@@ -21,7 +23,22 @@ export default function FileTransferView({
     haveLocalOffer
   } = uiState;
   const [haveLocalAnswer,setHaveLocalAnswer]= useState(false);
+  const fileLinkRef =useRef(null);
 
+useEffect(()=>{
+  if(fileInfo && fileLinkRef.current){
+    debugger;
+    fileLinkRef.current.download = fileInfo.name
+  }
+},[fileInfo,fileLinkRef])
+
+  useEffect(()=>{
+    if(assembledFile && recievingComplete){
+      debugger
+      fileLinkRef.current.href = URL.createObjectURL(assembledFile)
+    
+    }
+  },[assembledFile, recievingComplete,fileLinkRef,fileInfo])
 
   function sendOffer() {
     handleSendMessage("file-offer");
@@ -40,7 +57,9 @@ export default function FileTransferView({
   function sendCancel() {
     handleSendMessage("file-cancel");
   }
-
+function handleFileDownload(e){
+  e.preventDefault()
+}
   if (recievingFile) {
     return (
       <div className="file-transfer">
@@ -72,7 +91,7 @@ export default function FileTransferView({
       <div className="file-transfer">
         <div>Recieving Complete</div>
         <div>
-          <button onClick={closeDataChannel}>Ok</button>
+        <a   ref={fileLinkRef} >Download file</a>
         </div>
       </div>
     );

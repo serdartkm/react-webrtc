@@ -10,17 +10,32 @@ export default function useFileReader (){
     const [error,setError] =useState(null);
     const [nextSlice,setNextSlice] =useState(0);
     const [readProgress,setReadProcess]= useState(0);
+    const [bytesRead,setBytesRead]= useState(0)
+
+    useEffect(()=>{
+    if(bytesRead>0){
+        let progress =((bytesRead * 100)/ file.size ).toFixed()
+        setReadProcess(Number.parseInt(progress))
+    
+    }
+    },[bytesRead, readProgress])
+
+    // 1. Create FileReader on component's first mount
     useEffect(()=>{
         if(slices){
             createFileReader()
         }
      
     },[slices])
+
+    //3.file state changes after user selects a file
     useEffect(()=>{
         if(files){
             setFile(files[0])
         }
     },[files])
+
+    //4. After file state chage files gets sliced and put into slices array for later use
     useEffect(()=>{
         if(file){
          
@@ -28,23 +43,8 @@ export default function useFileReader (){
         }
     },[file])
 
-  useEffect(()=>{
-      if(nextSlice && nextSlice < slices.length){
-         
-  
-            let progress =(((nextSlice* BYTES_PER_CHUNK) * 100)/ file.size ).toFixed()
-            setReadProcess(Number.parseInt(progress))
-          
-      
-      }
-  },[nextSlice,slices])
 
-  useEffect(()=>{
-      if(readProgress ===100){
-    
-      }
-  },[readProgress])
-
+    //2. User selects a file
     function handleFileChange (e){
         setFiles(e.target.files);
     }
@@ -65,13 +65,13 @@ export default function useFileReader (){
 
         }
         rd.onloadend =(r)=>{
-        
+            //6. After filechunk is read fileChunk state is set to read value
             if (r.target.readyState === FileReader.DONE) {
                 var chunk = r.target.result
                 setFileChunk(chunk)
-                if(nextSlice <= slices.length){
-                    setNextSlice(prev =>  ++ prev)
-                }
+                setBytesRead(preState => preState + chunk.byteLength)
+         
+              
             }
         }
 
@@ -96,18 +96,20 @@ export default function useFileReader (){
                 start =start+ BYTES_PER_CHUNK;
             }
             setSlices(list);
+         
     }
 
-
+        // 5. consumer components calls startReadingFileBySlice until readProgress riches 100
     function startReadingFileBySlice (){
-       if(nextSlice <slices.length){
-        readNextSlice()
-       }
+      
+        if(nextSlice < slices.length){
+            reader.readAsArrayBuffer(file.slice(slices[nextSlice].start, slices[nextSlice].end))
+            setNextSlice(prev =>  ++ prev)
+    
+        
+        }
    
     }
 
-     function readNextSlice (){
-        reader.readAsArrayBuffer(file.slice(slices[nextSlice].start, slices[nextSlice].end))
-     }
     return {handleFileChange, file, fileChunk, startReadingFileBySlice,error, readProgress}
 }

@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import{useEffect, useState} from 'react'
+import{useEffect, useState, useCallback} from 'react'
 import iceServers from './ice-servers';
 import useFileAssembler from './useFileAssembler'
 export default function useWebRTC ({signalingMessage,sendSignalingMessage, readProgress,startReadingFileBySlice, fileChunk,file}){
@@ -18,6 +18,23 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
     const [datachannelState,setDatachannelState] =useState('');
     const {downloadProgress,assembledFile} =useFileAssembler({fileChunk:remoteFileChunk,fileInfo:remoteFileInfo})
 
+
+    useEffect(()=>{
+        if(!pc){
+            setSignalingState('');
+            setIceConnectionState('');
+            setIceGatheringState('');
+            setConnectionState('');
+            setDatachannelState('');
+        }
+    },[pc])
+
+    useEffect(()=>{
+        if(datachannelState==='closed'){
+            pc.close()
+        }
+    },[datachannelState])
+
     useEffect(()=>{
         if(fileChunk){
           
@@ -30,13 +47,14 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
          
             let channel = pc.createDataChannel('chat');
           //  channel.binaryType = 'arraybuffer'
-	
-            channel.onopen =()=>{
-                startReadingFileBySlice();
-            }
-			channel.onclose =() => {
-				
-			};
+            channel.onclose =() => {
+                setDatachannelState('closed');
+               };
+               channel.onopen =()=>{
+               
+                   startReadingFileBySlice();
+                   setDatachannelState('open');
+               }
 			channel.onerror = (err) => {
                 setError(err);
                 debugger;
@@ -82,6 +100,7 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
     
                 };
                 channel.onopen =()=>{
+                  
                     setDatachannelState('open');
                 }
                 channel.onerror = (err) => {
@@ -166,7 +185,11 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
 			setConnectionState(peerCon.connectionState);
 		};
 		peerCon.onsignalingstatechange = () => {
-			setSignalingState(peerCon.signalingState);
+            setSignalingState(peerCon.signalingState);
+            if (peerCon.signalingState==='closed'){
+                resetState();
+                debugger;
+            }
 		};
 		peerCon.oniceconnectionstatechange = () => {
 			setIceConnectionState(peerCon.iceConnectionState);
@@ -223,15 +246,36 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
     }
 
     function sendFileChunk (fileChunk){
-    
-      //  datachannel.channel.binaryType = 'arraybuffer'
         datachannel.send(fileChunk);
      
+        if(readProgress<100){
             startReadingFileBySlice();
+        }
+          
     }
 
     function closeDataChannel (){
         datachannel.close()
     }
+
+    const resetState =useCallback(()=>{
+		if (pc){
+			pc.onicecandidate =null;
+			pc.onconnectionstatechange = null;
+			pc.onsignalingstatechange = null;
+			pc.oniceconnectionstatechange = null;
+			pc.onicegatheringstatechange = null;
+			pc.ontrack = null;
+			setError(null);
+            setRemoteOffer(null);
+            setRemoteFileInfo(null);
+            setInitiator(false);
+			setRemoteIceCandidates([]);
+            setDatachannelState(null);
+            setRemoteFileChunk(null);
+            setPc(null);
+            
+		}
+	})
     return {handleSendMessage, state:{iceConnectionState,iceGatheringState,connectionState,signalingState,datachannelState},error,downloadProgress,assembledFile,closeDataChannel}
 }

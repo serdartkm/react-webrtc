@@ -11,7 +11,7 @@ export default function Client({ currentUser, name, target,roomId='0d3729a6-d4c2
 
   const {signalingMessage, sendSignalingMessage,error: signalingError}= usePusherSignaling({currentUser,roomId,target,name})
   const {handleFileChange, file, error:readerError, readProgress,startReadingFileBySlice,fileChunk} = useFileReader()
-  const {handleSendMessage, error:webRTCError,downloadProgress, state,closeDataChannel} =useWebRTC({readProgress,fileChunk,sendSignalingMessage,signalingMessage,startReadingFileBySlice,file})
+  const {handleSendMessage, error:webRTCError,downloadProgress, state,closeDataChannel, assembledFile} =useWebRTC({readProgress,fileChunk,sendSignalingMessage,signalingMessage,startReadingFileBySlice,file})
   const {uiState}= useUIState({state,file,readProgress,downloadProgress})
  
 
@@ -28,10 +28,10 @@ export default function Client({ currentUser, name, target,roomId='0d3729a6-d4c2
   return (
     <div className="client">
       <div className="client-top">
-      <FileTransferView closeDataChannel={closeDataChannel} downloadProgress={downloadProgress} state={state} handleSendMessage={handleSendMessage} readProgress={readProgress}  handleFileChange={handleFileChange} uiState={uiState}/>
+      <FileTransferView fileInfo={file} assembledFile={assembledFile} closeDataChannel={closeDataChannel} downloadProgress={downloadProgress} state={state} handleSendMessage={handleSendMessage} readProgress={readProgress}  handleFileChange={handleFileChange} uiState={uiState}/>
       </div>
       <div className="client-bottom">
-        <WebRTCState signalingState={state.signalingState} connectionState={state.connectionState} iceConnectionState={state.iceConnectionState} iceGatheringState={state.iceGatheringState} />
+        <WebRTCState datachannelState={state.datachannelState} signalingState={state.signalingState} connectionState={state.connectionState} iceConnectionState={state.iceConnectionState} iceGatheringState={state.iceGatheringState} />
       </div>
     </div>
   );
