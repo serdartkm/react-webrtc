@@ -116,7 +116,6 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
                   return pc.createAnswer()
               })
               .then((localAnswer)=>{
-               
                   pc.setLocalDescription(localAnswer);
               })
               .then(() => {
@@ -150,6 +149,7 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
                     remoteAnswerRecieved(signalingMessage.sdp)
                     break;
                 case 'file-decline':
+                    pc.close();
                     break;
                 case 'file-cancel':
                     datachannel.close()
@@ -164,7 +164,6 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
         }
     },[signalingMessage])
 
- 
     function createLocalOffer (){
         createRTCPeerConnection()
         setInitiator(true);
@@ -189,8 +188,8 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
 		peerCon.onsignalingstatechange = () => {
             setSignalingState(peerCon.signalingState);
             if (peerCon.signalingState==='closed'){
+                debugger;
                 resetState();
-              
             }
 		};
 		peerCon.oniceconnectionstatechange = () => {
@@ -241,7 +240,8 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
             sendLocalAnswer();
             break;
             case 'file-decline':
-           
+            sendSignalingMessage({type:'file-decline'})
+            pc.close()
             break;
             case 'file-cancel':
                datachannel.close()
@@ -251,11 +251,15 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
     }
 
     function sendFileChunk (fileChunk){
-        if(datachannelState==='open'){
-            datachannel.send(fileChunk);
-            startReadingFileBySlice();
+        try {
+            if(!error && datachannelState==='open' && datachannel.readyState !=='closing' && datachannel.readyState !=='closed'){
+                datachannel.send(fileChunk);
+                startReadingFileBySlice();
+            } 
+        } catch (err) {
+            debugger;
+          setError(err)  
         }
-      
     }
 
     function closeDataChannel (){
@@ -269,7 +273,8 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
 			pc.onsignalingstatechange = null;
 			pc.oniceconnectionstatechange = null;
 			pc.onicegatheringstatechange = null;
-			pc.ontrack = null;
+            pc.ontrack = null;
+            pc.ondatachannel =null;
 			setError(null);
             setRemoteOffer(null);
             setRemoteFileInfo(null);
@@ -281,8 +286,6 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
             
 		}
     })
-    
-
     
     return {handleSendMessage, state:{iceConnectionState,iceGatheringState,connectionState,signalingState,datachannelState},error,downloadProgress,assembledFile,closeDataChannel,remoteFileInfo}
 }

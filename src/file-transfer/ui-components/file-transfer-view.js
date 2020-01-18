@@ -23,17 +23,23 @@ export default function FileTransferView({
     haveLocalOffer
   } = uiState;
   const [haveLocalAnswer,setHaveLocalAnswer]= useState(false);
-
+  const {signalingState}= uiState
   const fileLinkRef =useRef(null);
-   
+  
+  useEffect(()=>{
+    if(signalingState==='closed'){
+      debugger;
+      setHaveLocalAnswer(false);
+    }
+  },[signalingState])
 
 
   useEffect(()=>{
-    if(assembledFile && remoteFileInfo ){
+    if(assembledFile && remoteFileInfo && fileLinkRef.current ){
       fileLinkRef.current.href = URL.createObjectURL(assembledFile)
       fileLinkRef.current.download=remoteFileInfo.name;
     }
-  },[assembledFile,remoteFileInfo])
+  },[assembledFile,remoteFileInfo,fileLinkRef])
 
   function sendOffer() {
     handleSendMessage("file-offer");
