@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {useState, useEffect} from 'react'
 
 const BYTES_PER_CHUNK= 100;
@@ -7,18 +8,14 @@ export default function useFileReader (){
     const [slices,setSlices]= useState([])
     const [fileChunk, setFileChunk] =useState(null);
     const [reader,setReader]=useState(null);
+    const [readComplete,setReadComplete]= useState(false);
     const [error,setError] =useState(null);
     const [nextSlice,setNextSlice] =useState(0);
     const [readProgress,setReadProcess]= useState(0);
     const [bytesRead,setBytesRead]= useState(0)
 
-    useEffect(()=>{
-    if(bytesRead>0){
-        let progress =((bytesRead * 100)/ file.size ).toFixed()
-        setReadProcess(Number.parseInt(progress))
-    
-    }
-    },[bytesRead, readProgress])
+   
+  
 
     // 1. Create FileReader on component's first mount
     useEffect(()=>{
@@ -28,7 +25,7 @@ export default function useFileReader (){
      
     },[slices])
 
-    //3.file state changes after user selects a file
+    //2.file state changes after user selects a file
     useEffect(()=>{
         if(files){
             setFile(files[0])
@@ -42,9 +39,27 @@ export default function useFileReader (){
             sliceFile(file);
         }
     },[file])
+ 
+    //5.After File slice gets read by File Reader setBytesRead
+    useEffect(()=>{
+        if(fileChunk){
+          
+            let progress =(((bytesRead + fileChunk.byteLength)/ file.size)*100 ).toFixed()
+            setReadProcess(Number.parseInt(progress))
+        }
+ 
+    },[fileChunk])
 
+    //6.After bytesRead change set readProgress
 
-    //2. User selects a file
+    useEffect(()=>{
+    
+          if(file && bytesRead=== file.size){
+            setReadComplete(true)
+          }
+        
+    },[bytesRead])
+
     function handleFileChange (e){
         setFiles(e.target.files);
     }
@@ -65,13 +80,11 @@ export default function useFileReader (){
 
         }
         rd.onloadend =(r)=>{
-            //6. After filechunk is read fileChunk state is set to read value
+
             if (r.target.readyState === FileReader.DONE) {
                 var chunk = r.target.result
                 setFileChunk(chunk)
                 setBytesRead(preState => preState + chunk.byteLength)
-         
-              
             }
         }
 
@@ -99,10 +112,11 @@ export default function useFileReader (){
          
     }
 
-        // 5. consumer components calls startReadingFileBySlice until readProgress riches 100
+  
     function startReadingFileBySlice (){
       
         if(nextSlice < slices.length){
+         
             reader.readAsArrayBuffer(file.slice(slices[nextSlice].start, slices[nextSlice].end))
             setNextSlice(prev =>  ++ prev)
     
@@ -111,5 +125,5 @@ export default function useFileReader (){
    
     }
 
-    return {handleFileChange, file, fileChunk, startReadingFileBySlice,error, readProgress}
+    return {handleFileChange, file, fileChunk, startReadingFileBySlice,error, readProgress,readComplete}
 }

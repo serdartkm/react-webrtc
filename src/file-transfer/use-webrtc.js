@@ -93,6 +93,7 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
                 let channel = event.channel;
      
                 channel.onmessage = (event) => {
+                  
                     setRemoteFileChunk(event.data)
                 };
                 channel.onclose =() => {
@@ -150,7 +151,8 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
                     break;
                 case 'file-decline':
                     break;
-                case 'file-end':
+                case 'file-cancel':
+                    datachannel.close()
                     break;
                 case 'file-start':
                     break;
@@ -188,7 +190,7 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
             setSignalingState(peerCon.signalingState);
             if (peerCon.signalingState==='closed'){
                 resetState();
-                debugger;
+              
             }
 		};
 		peerCon.oniceconnectionstatechange = () => {
@@ -233,25 +235,27 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
     function handleSendMessage (type){
         switch(type){
             case 'file-offer':
-           
             createLocalOffer();
             break;
             case 'file-answer':
             sendLocalAnswer();
             break;
             case 'file-decline':
+           
+            break;
+            case 'file-cancel':
+               datachannel.close()
             break;
             default:
         }
     }
 
     function sendFileChunk (fileChunk){
-        datachannel.send(fileChunk);
-     
-        if(readProgress<100){
+        if(datachannelState==='open'){
+            datachannel.send(fileChunk);
             startReadingFileBySlice();
         }
-          
+      
     }
 
     function closeDataChannel (){
@@ -276,6 +280,9 @@ export default function useWebRTC ({signalingMessage,sendSignalingMessage, readP
             setPc(null);
             
 		}
-	})
-    return {handleSendMessage, state:{iceConnectionState,iceGatheringState,connectionState,signalingState,datachannelState},error,downloadProgress,assembledFile,closeDataChannel}
+    })
+    
+
+    
+    return {handleSendMessage, state:{iceConnectionState,iceGatheringState,connectionState,signalingState,datachannelState},error,downloadProgress,assembledFile,closeDataChannel,remoteFileInfo}
 }

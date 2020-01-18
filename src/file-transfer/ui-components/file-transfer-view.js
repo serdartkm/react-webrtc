@@ -10,7 +10,7 @@ export default function FileTransferView({
   downloadProgress,
   closeDataChannel,
   assembledFile,
-  fileInfo,
+  remoteFileInfo,
   readProgress
 }) {
   const {
@@ -23,22 +23,17 @@ export default function FileTransferView({
     haveLocalOffer
   } = uiState;
   const [haveLocalAnswer,setHaveLocalAnswer]= useState(false);
-  const fileLinkRef =useRef(null);
 
-useEffect(()=>{
-  if(fileInfo && fileLinkRef.current){
-    debugger;
-    fileLinkRef.current.download = fileInfo.name
-  }
-},[fileInfo,fileLinkRef])
+  const fileLinkRef =useRef(null);
+   
+
 
   useEffect(()=>{
-    if(assembledFile && recievingComplete){
-      debugger
+    if(assembledFile && remoteFileInfo ){
       fileLinkRef.current.href = URL.createObjectURL(assembledFile)
-    
+      fileLinkRef.current.download=remoteFileInfo.name;
     }
-  },[assembledFile, recievingComplete,fileLinkRef,fileInfo])
+  },[assembledFile,remoteFileInfo])
 
   function sendOffer() {
     handleSendMessage("file-offer");
@@ -57,9 +52,7 @@ useEffect(()=>{
   function sendCancel() {
     handleSendMessage("file-cancel");
   }
-function handleFileDownload(e){
-  e.preventDefault()
-}
+
   if (recievingFile) {
     return (
       <div className="file-transfer">
@@ -91,7 +84,7 @@ function handleFileDownload(e){
       <div className="file-transfer">
         <div>Recieving Complete</div>
         <div>
-        <a   ref={fileLinkRef} >Download file</a>
+        <a href="/"  ref={fileLinkRef}>Download file</a>
         </div>
       </div>
     );
